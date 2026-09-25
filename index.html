@@ -39,6 +39,48 @@
 
   .app { display: flex; min-height: 100vh; }
 
+  /* ===== MOBILE TOPBAR (hidden on desktop) ===== */
+  .mobile-topbar {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--navy);
+    color: #fff;
+    padding: 12px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .mobile-topbar .brand-mini {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 700; font-size: 14.5px;
+  }
+  .mobile-topbar .brand-mini .dot {
+    width: 30px; height: 30px;
+    background: var(--amber);
+    color: var(--navy);
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 15px;
+    flex-shrink: 0;
+  }
+  .menu-btn {
+    background: none; border: none;
+    color: #fff;
+    font-size: 22px;
+    padding: 4px 8px;
+    line-height: 1;
+  }
+
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 60;
+  }
+  .sidebar-overlay.open { display: block; }
+
   /* ===== SIDEBAR ===== */
   .sidebar {
     width: 250px;
@@ -48,6 +90,9 @@
     display: flex;
     flex-direction: column;
     padding: 22px 0;
+  }
+  .sidebar-close {
+    display: none;
   }
   .brand {
     padding: 0 20px 20px 20px;
@@ -275,7 +320,7 @@
   table.data-tbl td.row-label { font-weight: 600; color: var(--navy-soft); white-space: nowrap; }
   table.data-tbl input {
     width: 100%;
-    
+    border: 1px solid transparent;
     background: transparent;
     padding: 5px 6px;
     border-radius: 5px;
@@ -335,6 +380,72 @@
     font-size: 13.5px;
   }
 
+  /* ============ RESPONSIVE ============ */
+
+  /* Tablet: tighten spacing, 2-col form grid already handled at 900px above */
+  @media (max-width: 1000px) {
+    .main { padding: 24px 20px 50px 20px; }
+  }
+
+  /* Mobile: collapse sidebar into a slide-in drawer */
+  @media (max-width: 780px) {
+    .mobile-topbar { display: flex; }
+
+    .app { flex-direction: column; }
+
+    .sidebar {
+      position: fixed;
+      top: 0; right: 0; bottom: 0;
+      width: 82%;
+      max-width: 300px;
+      transform: translateX(100%);
+      transition: transform .25s ease;
+      z-index: 70;
+      box-shadow: -8px 0 24px rgba(0,0,0,0.25);
+    }
+    .sidebar.open { transform: translateX(0); }
+
+    .sidebar-close {
+      display: block;
+      position: absolute;
+      left: 14px;
+      top: 18px;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 20px;
+      padding: 4px 8px;
+    }
+
+    .main { padding: 18px 14px 44px 14px; }
+
+    .page-head { flex-direction: column; align-items: flex-start; gap: 6px; }
+    .page-head h1 { font-size: 18px; }
+
+    .panel { padding: 16px 14px; border-radius: 8px; }
+
+    .form-grid { grid-template-columns: 1fr; gap: 14px; }
+    .f-item.wide, .f-item.full { grid-column: 1 / -1; }
+
+    .two-col { grid-template-columns: 1fr; }
+
+    .filter-bar { flex-direction: column; align-items: stretch; gap: 12px; }
+    .filter-bar .btn { width: 100%; }
+
+    .form-actions { flex-direction: column; }
+    .form-actions .btn { width: 100%; }
+
+    .sec-title { font-size: 13.5px; margin: 20px 0 8px 0; }
+
+    table.data-tbl { font-size: 12.5px; }
+    table.data-tbl th, table.data-tbl td { padding: 7px 8px; }
+  }
+
+  @media (max-width: 420px) {
+    .brand-name { font-size: 14px; }
+    select.big-select { font-size: 13.5px; }
+  }
+
   @media print {
     .sidebar, .page-head, .filter-bar, .no-print, .form-actions { display: none !important; }
     .main { padding: 0; }
@@ -346,8 +457,20 @@
 <body>
 <div class="app">
 
+  <!-- ============ MOBILE TOPBAR ============ -->
+  <div class="mobile-topbar">
+    <div class="brand-mini">
+      <div class="dot">غ</div>
+      <span>نظام سجلات الصيانة</span>
+    </div>
+    <button class="menu-btn" onclick="openSidebar()" aria-label="فتح القائمة">☰</button>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
   <!-- ============ SIDEBAR ============ -->
-  <nav class="sidebar">
+  <nav class="sidebar" id="sidebarNav">
+    <button class="sidebar-close" onclick="closeSidebar()" aria-label="إغلاق القائمة">✕</button>
     <div class="brand">
       <div class="brand-mark">غ</div>
       <div class="brand-name">نظام سجلات الصيانة</div>
@@ -1036,6 +1159,15 @@ const pageMeta = {
   'reg-gas-monthly': {group:'regulators', crumb:'صيانات منظمات', title:'تقرير شهري لمنظمات الغاز'},
 };
 
+function openSidebar(){
+  document.getElementById('sidebarNav').classList.add('open');
+  document.getElementById('sidebarOverlay').classList.add('open');
+}
+function closeSidebar(){
+  document.getElementById('sidebarNav').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+}
+
 function toggleGroup(g){
   document.querySelectorAll('.nav-sub').forEach(el=>{
     if(el.dataset.sub===g){ el.classList.toggle('open'); }
@@ -1163,6 +1295,7 @@ function showPage(id){
     }
   }
   window.scrollTo(0,0);
+  closeSidebar();
 }
 
 showPage('home');

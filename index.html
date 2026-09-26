@@ -236,26 +236,23 @@
     font-size: 14px;
     background: #fff;
   }
-  .seg {
-    display: flex;
+  .f-item select.dd {
+    width: 100%;
+    padding: 9px 34px 9px 11px;
     border: 1.5px solid var(--line);
     border-radius: 7px;
-    overflow: hidden;
-  }
-  .seg button {
-    flex: 1;
-    border: none;
-    background: #fff;
-    padding: 9px 6px;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
-    color: var(--ink-soft);
-    border-left: 1.5px solid var(--line);
-    transition: background .15s, color .15s;
+    color: var(--ink);
+    background: #fff;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%235B6664' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: left 12px center;
+    transition: background-color .15s, color .15s;
   }
-  .seg button:last-child { border-left: none; }
-  .seg button.on-good { background: var(--good-bg); color: var(--good); }
-  .seg button.on-bad { background: var(--bad-bg); color: var(--bad); }
+  .f-item select.dd.dd-good { background-color: var(--good-bg); color: var(--good); border-color: var(--good); }
+  .f-item select.dd.dd-bad { background-color: var(--bad-bg); color: var(--bad); border-color: var(--bad); }
 
   .f-item.wide { grid-column: span 2; }
   .f-item.full { grid-column: 1 / -1; }
@@ -320,7 +317,7 @@
   table.data-tbl td.row-label { font-weight: 600; color: var(--navy-soft); white-space: nowrap; }
   table.data-tbl input {
     width: 100%;
-   
+    border: 1px solid transparent;
     background: transparent;
     padding: 5px 6px;
     border-radius: 5px;
@@ -485,13 +482,12 @@
 
     <div class="nav-group">
       <button class="nav-head" data-group="facility" onclick="toggleGroup('facility')">
-        <span>صيانة منشأ</span>
+        <span>صيانة وقائية</span>
         <span class="chev">▾</span>
       </button>
       <div class="nav-sub" data-sub="facility">
-        <button class="nav-link" data-page="facility-residential" onclick="showPage('facility-residential')">سكني</button>
-        <button class="nav-link" data-page="facility-commercial" onclick="showPage('facility-commercial')">تجاري</button>
-        <button class="nav-link" data-page="facility-industrial" onclick="showPage('facility-industrial')">صناعي</button>
+        <button class="nav-link" data-page="facility-entry" onclick="showPage('facility-entry')">تسجيل حالة</button>
+        <button class="nav-link" data-page="facility-report" onclick="showPage('facility-report')">تقرير</button>
       </div>
     </div>
 
@@ -502,8 +498,7 @@
       </button>
       <div class="nav-sub" data-sub="valves">
         <button class="nav-link" data-page="valves-maintenance" onclick="showPage('valves-maintenance')">صيانة المحابس</button>
-        <button class="nav-link" data-page="valves-id" onclick="showPage('valves-id')">كارت تعريف</button>
-        <button class="nav-link" data-page="valves-network" onclick="showPage('valves-network')">صيانات مكونات شبكة</button>
+        <button class="nav-link" data-page="valves-monthly" onclick="showPage('valves-monthly')">تقرير شهري لصيانة المحابس</button>
       </div>
     </div>
 
@@ -513,10 +508,9 @@
         <span class="chev">▾</span>
       </button>
       <div class="nav-sub" data-sub="regulators">
-        <button class="nav-link" data-page="reg-id" onclick="showPage('reg-id')">كارت تعريف</button>
-        <button class="nav-link" data-page="reg-followup" onclick="showPage('reg-followup')">متابعة صيانة</button>
-        <button class="nav-link" data-page="reg-monthly" onclick="showPage('reg-monthly')">تقرير شهري</button>
-        <button class="nav-link" data-page="reg-gas-monthly" onclick="showPage('reg-gas-monthly')">تقرير شهري لمنظمات الغاز</button>
+        <button class="nav-link" data-page="reg-followup" onclick="showPage('reg-followup')">متابعة صيانة منظم</button>
+        <button class="nav-link" data-page="reg-work-log" onclick="showPage('reg-work-log')">متابعة أعمال الصيانة بالمنظمات</button>
+        <button class="nav-link" data-page="reg-work-report" onclick="showPage('reg-work-report')">تقرير شهري لمتابعة الأعمال</button>
       </div>
     </div>
   </nav>
@@ -550,45 +544,94 @@
       </div>
     </div>
 
-    <!-- ============ FACILITY MAINTENANCE (3 pages, same fields) ============ -->
-    <div data-pageview="facility-residential" style="display:none;">
-      <div class="breadcrumb">صيانة منشأ</div>
-      <div class="page-head"><h1>سكني</h1></div>
+    <!-- ============ صيانة وقائية: تسجيل حالة ============ -->
+    <div data-pageview="facility-entry" style="display:none;">
+      <div class="breadcrumb">صيانة وقائية</div>
+      <div class="page-head"><h1>تسجيل حالة</h1></div>
       <div class="panel">
         <div class="form-grid">
-          <div class="f-item"><label>عمارة</label><input type="text" placeholder="رقم العمارة"></div>
-          <div class="f-item"><label>بلوك</label><input type="text" placeholder="رقم البلوك"></div>
-          <div class="f-item"><label>قطاع</label><input type="text" placeholder="اسم القطاع"></div>
-          <div class="f-item"><label>اسم الفني</label><input type="text" placeholder="اسم الفني القائم بالعمل"></div>
-          <div class="f-item"><label>تاريخ المرور</label><input type="date"></div>
-          <div class="f-item"><label>تاريخ حل المشكلة</label><input type="date"></div>
+          <div class="f-item"><label>تاريخ حل المشكلة</label><input type="date" id="fe-fix-date"></div>
+          <div class="f-item full"><label>ملاحظات</label><textarea id="fe-notes" placeholder="أي ملاحظات إضافية..."></textarea></div>
+
+          <div class="f-item">
+            <label>نوع المنشأ</label>
+            <select class="dd" id="fe-type">
+              <option value="">اختر...</option>
+              <option value="سكني">سكني</option>
+              <option value="تجاري">تجاري</option>
+              <option value="صناعي">صناعي</option>
+            </select>
+          </div>
+          <div class="f-item"><label>اسم الفني</label><input type="text" id="fe-tech" placeholder="اسم الفني القائم بالعمل"></div>
+          <div class="f-item"><label>تاريخ المرور</label><input type="date" id="fe-visit-date"></div>
 
           <div class="f-item">
             <label>كشف التسريب</label>
-            <div class="seg" data-seg="yn"><button type="button" onclick="segPick(this,'good')">يوجد</button><button type="button" onclick="segPick(this,'bad')">لا يوجد</button></div>
+            <select class="dd" id="fe-leak" onchange="ddColor(this)">
+              <option value="">اختر...</option>
+              <option value="يوجد" data-tone="bad">يوجد</option>
+              <option value="لا يوجد" data-tone="good">لا يوجد</option>
+            </select>
           </div>
           <div class="f-item">
             <label>مخلفات أو عبث أو تركيبات</label>
-            <div class="seg" data-seg="yn"><button type="button" onclick="segPick(this,'bad')">يوجد</button><button type="button" onclick="segPick(this,'good')">لا يوجد</button></div>
+            <select class="dd" id="fe-debris" onchange="ddColor(this)">
+              <option value="">اختر...</option>
+              <option value="يوجد" data-tone="bad">يوجد</option>
+              <option value="لا يوجد" data-tone="good">لا يوجد</option>
+            </select>
           </div>
           <div class="f-item">
             <label>قاعدة البراكت</label>
-            <div class="seg" data-seg="sg"><button type="button" onclick="segPick(this,'good')">سليم</button><button type="button" onclick="segPick(this,'bad')">غير سليم</button></div>
+            <select class="dd" id="fe-bracket" onchange="ddColor(this)">
+              <option value="">اختر...</option>
+              <option value="سليم" data-tone="good">سليم</option>
+              <option value="غير سليم" data-tone="bad">غير سليم</option>
+            </select>
           </div>
           <div class="f-item">
             <label>عبث شاكوش</label>
-            <div class="seg" data-seg="yn"><button type="button" onclick="segPick(this,'bad')">يوجد</button><button type="button" onclick="segPick(this,'good')">لا يوجد</button></div>
+            <select class="dd" id="fe-hammer" onchange="ddColor(this)">
+              <option value="">اختر...</option>
+              <option value="يوجد" data-tone="bad">يوجد</option>
+              <option value="لا يوجد" data-tone="good">لا يوجد</option>
+            </select>
           </div>
           <div class="f-item">
             <label>حالة الكلبسات</label>
-            <div class="seg" data-seg="yn2"><button type="button" onclick="segPick(this,'good')">يوجد</button><button type="button" onclick="segPick(this,'bad')">لا يوجد</button></div>
+            <select class="dd" id="fe-clamps" onchange="ddColor(this)">
+              <option value="">اختر...</option>
+              <option value="يوجد" data-tone="good">يوجد</option>
+              <option value="لا يوجد" data-tone="bad">لا يوجد</option>
+            </select>
           </div>
           <div class="f-item">
             <label>حالة الدهان</label>
-            <div class="seg" data-seg="sg"><button type="button" onclick="segPick(this,'good')">سليم</button><button type="button" onclick="segPick(this,'bad')">غير سليم</button></div>
+            <select class="dd" id="fe-paint" onchange="ddColor(this)">
+              <option value="">اختر...</option>
+              <option value="سليم" data-tone="good">سليم</option>
+              <option value="غير سليم" data-tone="bad">غير سليم</option>
+            </select>
           </div>
 
-          <div class="f-item full"><label>ملاحظات</label><textarea placeholder="أي ملاحظات إضافية..."></textarea></div>
+          <div class="f-item"><label>عمارة</label><input type="text" id="fe-building" placeholder="رقم العمارة"></div>
+          <div class="f-item"><label>بلوك</label><input type="text" id="fe-block" placeholder="رقم البلوك"></div>
+          <div class="f-item"><label>قطاع</label><input type="text" id="fe-sector" placeholder="اسم القطاع"></div>
+
+          <div class="f-item">
+            <label>محافظة</label>
+            <select class="dd" id="fe-gov" onchange="updateAreaOptions()">
+              <option value="">اختر...</option>
+              <option value="قاهرة">قاهرة</option>
+              <option value="قليوبية">قليوبية</option>
+            </select>
+          </div>
+          <div class="f-item">
+            <label>منطقة</label>
+            <select class="dd" id="fe-area">
+              <option value="">اختر المحافظة أولاً</option>
+            </select>
+          </div>
         </div>
         <div class="form-actions">
           <button class="btn btn-primary">حفظ السجل</button>
@@ -597,93 +640,33 @@
       </div>
     </div>
 
-    <div data-pageview="facility-commercial" style="display:none;">
-      <div class="breadcrumb">صيانة منشأ</div>
-      <div class="page-head"><h1>تجاري</h1></div>
-      <div class="panel">
-        <p style="color:var(--ink-soft); font-size:13px; margin-top:0;">نفس حقول القسم السكني مؤقتًا، لحين توفير الحقول الخاصة بالمنشآت التجارية.</p>
-        <div class="form-grid">
-          <div class="f-item"><label>عمارة</label><input type="text" placeholder="رقم العمارة"></div>
-          <div class="f-item"><label>بلوك</label><input type="text" placeholder="رقم البلوك"></div>
-          <div class="f-item"><label>قطاع</label><input type="text" placeholder="اسم القطاع"></div>
-          <div class="f-item"><label>اسم الفني</label><input type="text" placeholder="اسم الفني القائم بالعمل"></div>
-          <div class="f-item"><label>تاريخ المرور</label><input type="date"></div>
-          <div class="f-item"><label>تاريخ حل المشكلة</label><input type="date"></div>
-          <div class="f-item">
-            <label>كشف التسريب</label>
-            <div class="seg" data-seg="yn"><button type="button" onclick="segPick(this,'good')">يوجد</button><button type="button" onclick="segPick(this,'bad')">لا يوجد</button></div>
-          </div>
-          <div class="f-item">
-            <label>مخلفات أو عبث أو تركيبات</label>
-            <div class="seg" data-seg="yn"><button type="button" onclick="segPick(this,'bad')">يوجد</button><button type="button" onclick="segPick(this,'good')">لا يوجد</button></div>
-          </div>
-          <div class="f-item">
-            <label>قاعدة البراكت</label>
-            <div class="seg" data-seg="sg"><button type="button" onclick="segPick(this,'good')">سليم</button><button type="button" onclick="segPick(this,'bad')">غير سليم</button></div>
-          </div>
-          <div class="f-item">
-            <label>عبث شاكوش</label>
-            <div class="seg" data-seg="yn"><button type="button" onclick="segPick(this,'bad')">يوجد</button><button type="button" onclick="segPick(this,'good')">لا يوجد</button></div>
-          </div>
-          <div class="f-item">
-            <label>حالة الكلبسات</label>
-            <div class="seg" data-seg="yn2"><button type="button" onclick="segPick(this,'good')">يوجد</button><button type="button" onclick="segPick(this,'bad')">لا يوجد</button></div>
-          </div>
-          <div class="f-item">
-            <label>حالة الدهان</label>
-            <div class="seg" data-seg="sg"><button type="button" onclick="segPick(this,'good')">سليم</button><button type="button" onclick="segPick(this,'bad')">غير سليم</button></div>
-          </div>
-          <div class="f-item full"><label>ملاحظات</label><textarea placeholder="أي ملاحظات إضافية..."></textarea></div>
-        </div>
-        <div class="form-actions">
-          <button class="btn btn-primary">حفظ السجل</button>
-          <button class="btn btn-ghost">إلغاء</button>
+    <!-- ============ صيانة وقائية: تقرير ============ -->
+    <div data-pageview="facility-report" style="display:none;">
+      <div class="breadcrumb">صيانة وقائية</div>
+      <div class="page-head"><h1>تقرير</h1></div>
+
+      <div class="panel no-print">
+        <div class="filter-bar">
+          <div class="filter-item"><label>من تاريخ</label><input type="date" id="fr-from"></div>
+          <div class="filter-item"><label>إلى تاريخ</label><input type="date" id="fr-to"></div>
+          <button class="btn btn-amber" onclick="genFacilityReport()">عرض التقرير</button>
         </div>
       </div>
-    </div>
 
-    <div data-pageview="facility-industrial" style="display:none;">
-      <div class="breadcrumb">صيانة منشأ</div>
-      <div class="page-head"><h1>صناعي</h1></div>
-      <div class="panel">
-        <p style="color:var(--ink-soft); font-size:13px; margin-top:0;">نفس حقول القسم السكني مؤقتًا، لحين توفير الحقول الخاصة بالمنشآت الصناعية.</p>
-        <div class="form-grid">
-          <div class="f-item"><label>عمارة</label><input type="text" placeholder="رقم العمارة"></div>
-          <div class="f-item"><label>بلوك</label><input type="text" placeholder="رقم البلوك"></div>
-          <div class="f-item"><label>قطاع</label><input type="text" placeholder="اسم القطاع"></div>
-          <div class="f-item"><label>اسم الفني</label><input type="text" placeholder="اسم الفني القائم بالعمل"></div>
-          <div class="f-item"><label>تاريخ المرور</label><input type="date"></div>
-          <div class="f-item"><label>تاريخ حل المشكلة</label><input type="date"></div>
-          <div class="f-item">
-            <label>كشف التسريب</label>
-            <div class="seg" data-seg="yn"><button type="button" onclick="segPick(this,'good')">يوجد</button><button type="button" onclick="segPick(this,'bad')">لا يوجد</button></div>
-          </div>
-          <div class="f-item">
-            <label>مخلفات أو عبث أو تركيبات</label>
-            <div class="seg" data-seg="yn"><button type="button" onclick="segPick(this,'bad')">يوجد</button><button type="button" onclick="segPick(this,'good')">لا يوجد</button></div>
-          </div>
-          <div class="f-item">
-            <label>قاعدة البراكت</label>
-            <div class="seg" data-seg="sg"><button type="button" onclick="segPick(this,'good')">سليم</button><button type="button" onclick="segPick(this,'bad')">غير سليم</button></div>
-          </div>
-          <div class="f-item">
-            <label>عبث شاكوش</label>
-            <div class="seg" data-seg="yn"><button type="button" onclick="segPick(this,'bad')">يوجد</button><button type="button" onclick="segPick(this,'good')">لا يوجد</button></div>
-          </div>
-          <div class="f-item">
-            <label>حالة الكلبسات</label>
-            <div class="seg" data-seg="yn2"><button type="button" onclick="segPick(this,'good')">يوجد</button><button type="button" onclick="segPick(this,'bad')">لا يوجد</button></div>
-          </div>
-          <div class="f-item">
-            <label>حالة الدهان</label>
-            <div class="seg" data-seg="sg"><button type="button" onclick="segPick(this,'good')">سليم</button><button type="button" onclick="segPick(this,'bad')">غير سليم</button></div>
-          </div>
-          <div class="f-item full"><label>ملاحظات</label><textarea placeholder="أي ملاحظات إضافية..."></textarea></div>
+      <div class="panel report-hidden" id="fr-report">
+        <div class="report-title no-print" style="text-align:left; margin-bottom:10px;">
+          <button class="btn btn-ghost" onclick="window.print()">🖨 طباعة التقرير</button>
         </div>
-        <div class="form-actions">
-          <button class="btn btn-primary">حفظ السجل</button>
-          <button class="btn btn-ghost">إلغاء</button>
+        <div class="report-title">
+          <h2>تقرير الصيانة الوقائية</h2>
+          <p id="fr-range">الفترة: —</p>
         </div>
+        <div class="tbl-wrap"><table class="data-tbl">
+          <thead><tr>
+            <th>تاريخ حل المشكلة</th><th>ملاحظات</th><th>نوع المنشأ</th><th>اسم الفني</th><th>تاريخ المرور</th><th>كشف التسريب</th><th>مخلفات أو عبث أو تركيبات</th><th>قاعدة البراكت</th><th>عبث شاكوش</th><th>حالة الكلبسات</th><th>حالة الدهان</th><th>عمارة</th><th>بلوك</th><th>قطاع</th><th>محافظة</th><th>منطقة</th>
+          </tr></thead>
+          <tbody id="fr-tbody"></tbody>
+        </table></div>
       </div>
     </div>
 
@@ -694,30 +677,58 @@
       <div class="panel">
         <div class="form-grid">
           <div class="f-item"><label>رقم المحبس</label><input type="text" placeholder="رقم المحبس"></div>
+          <div class="f-item">
+            <label>نوع المحبس</label>
+            <select class="dd">
+              <option value="">اختر...</option>
+              <option value="بولي تك">بولي تك</option>
+              <option value="صلب">صلب</option>
+            </select>
+          </div>
           <div class="f-item"><label>قطر المحبس</label><input type="text" placeholder="القطر"></div>
           <div class="f-item"><label>منسوب المحبس</label><input type="text" placeholder="المنسوب"></div>
           <div class="f-item">
             <label>P.V.C</label>
-            <div class="seg" data-seg="sg"><button type="button" onclick="segPick(this,'good')">سليم</button><button type="button" onclick="segPick(this,'bad')">غير سليم</button></div>
+            <select class="dd" onchange="ddColor(this)">
+              <option value="">اختر...</option>
+              <option value="سليم" data-tone="good">سليم</option>
+              <option value="غير سليم" data-tone="bad">غير سليم</option>
+            </select>
           </div>
           <div class="f-item"><label>تاريخ تركيب P.V.C</label><input type="date"></div>
           <div class="f-item"><label>نظافة المحبس</label><input type="text" placeholder="ملاحظة النظافة"></div>
           <div class="f-item">
             <label>كشف التسريب</label>
-            <div class="seg" data-seg="yn"><button type="button" onclick="segPick(this,'bad')">يوجد تسريب</button><button type="button" onclick="segPick(this,'good')">لا يوجد تسريب</button></div>
+            <select class="dd" onchange="ddColor(this)">
+              <option value="">اختر...</option>
+              <option value="يوجد تسريب" data-tone="bad">يوجد تسريب</option>
+              <option value="لا يوجد تسريب" data-tone="good">لا يوجد تسريب</option>
+            </select>
           </div>
           <div class="f-item">
             <label>Box</label>
-            <div class="seg" data-seg="mg"><button type="button" onclick="segPick(this,'good')">موجود</button><button type="button" onclick="segPick(this,'bad')">غير موجود</button></div>
+            <select class="dd" onchange="ddColor(this)">
+              <option value="">اختر...</option>
+              <option value="موجود" data-tone="good">موجود</option>
+              <option value="غير موجود" data-tone="bad">غير موجود</option>
+            </select>
           </div>
           <div class="f-item"><label>تاريخ تركيب Box</label><input type="date"></div>
           <div class="f-item">
             <label>سلسلة البوكس</label>
-            <div class="seg" data-seg="mg"><button type="button" onclick="segPick(this,'good')">موجود</button><button type="button" onclick="segPick(this,'bad')">غير موجود</button></div>
+            <select class="dd" onchange="ddColor(this)">
+              <option value="">اختر...</option>
+              <option value="موجود" data-tone="good">موجود</option>
+              <option value="غير موجود" data-tone="bad">غير موجود</option>
+            </select>
           </div>
           <div class="f-item">
             <label>فتح وغلق جزئي للمحبس</label>
-            <div class="seg" data-seg="es"><button type="button" onclick="segPick(this,'good')">سهل</button><button type="button" onclick="segPick(this,'bad')">صعب</button></div>
+            <select class="dd" onchange="ddColor(this)">
+              <option value="">اختر...</option>
+              <option value="سهل" data-tone="good">سهل</option>
+              <option value="صعب" data-tone="bad">صعب</option>
+            </select>
           </div>
           <div class="f-item"><label>تاريخ صيانة المحبس</label><input type="date"></div>
           <div class="f-item"><label>تاريخ معالجة المشكلة</label><input type="date"></div>
@@ -731,209 +742,52 @@
       </div>
     </div>
 
-    <!-- ============ VALVES: كارت تعريف ============ -->
-    <div data-pageview="valves-id" style="display:none;">
+    <!-- ============ VALVES: تقرير شهري لصيانة المحابس ============ -->
+    <div data-pageview="valves-monthly" style="display:none;">
       <div class="breadcrumb">محابس</div>
-      <div class="page-head"><h1>كارت تعريف</h1></div>
-      <div class="panel">
-        <div class="form-grid">
-          <div class="f-item">
-            <label>نوع المحبس</label>
-            <div class="seg" data-seg="type"><button type="button" onclick="segPick(this,'neutral')">صلب</button><button type="button" onclick="segPick(this,'neutral')">بولي إيثيلين</button></div>
-          </div>
-          <div class="f-item"><label>بلد المنشأ</label><input type="text" placeholder="بلد المنشأ"></div>
-          <div class="f-item"><label>عدد اللفات</label><input type="number" placeholder="0"></div>
-          <div class="f-item"><label>منسوب عمق المحبس</label><input type="text" placeholder="المنسوب"></div>
-          <div class="f-item wide"><label>مكان المحبس</label><input type="text" placeholder="وصف الموقع"></div>
+      <div class="page-head"><h1>تقرير شهري لصيانة المحابس</h1></div>
+
+      <div class="panel no-print">
+        <div class="filter-bar">
+          <div class="filter-item"><label>من تاريخ</label><input type="date" id="vm-from"></div>
+          <div class="filter-item"><label>إلى تاريخ</label><input type="date" id="vm-to"></div>
+          <button class="btn btn-amber" onclick="genValvesMonthly()">عرض التقرير</button>
         </div>
-        <div class="form-actions">
-          <button class="btn btn-primary">حفظ السجل</button>
-          <button class="btn btn-ghost">إلغاء</button>
+      </div>
+
+      <div class="panel report-hidden" id="vm-report">
+        <div class="report-title no-print" style="text-align:left; margin-bottom:10px;">
+          <button class="btn btn-ghost" onclick="window.print()">🖨 طباعة التقرير</button>
         </div>
+        <div class="report-title">
+          <h2>تقرير شهري لصيانة المحابس</h2>
+          <p id="vm-range">الفترة: —</p>
+        </div>
+        <div class="tbl-wrap"><table class="data-tbl">
+          <thead><tr>
+            <th>اسم المحبس CRN</th><th>نوع المحبس</th><th>نوع الصيانة</th><th>نوع المشكلة</th><th>تاريخ الملاحظة</th><th>الإجراء المتخذ</th><th>تاريخ الانتهاء</th><th>ملاحظات</th>
+          </tr></thead>
+          <tbody id="vm-tbody"></tbody>
+        </table></div>
       </div>
     </div>
 
-    <!-- ============ VALVES: صيانات مكونات شبكة (placeholder) ============ -->
-    <div data-pageview="valves-network" style="display:none;">
-      <div class="breadcrumb">محابس</div>
-      <div class="page-head"><h1>صيانات مكونات شبكة</h1></div>
-      <div class="panel">
-        <div class="empty-note">
-          الحقول الخاصة بهذا القسم لم تُحدد بعد — سيتم إضافتها لاحقًا.<br>
-          هذه الصفحة محجوزة في القائمة الجانبية ضمن مسار "محابس".
-        </div>
-      </div>
-    </div>
 
-    <!-- ============ REGULATORS: كارت تعريف ============ -->
-    <div data-pageview="reg-id" style="display:none;">
-      <div class="breadcrumb">صيانات منظمات</div>
-      <div class="page-head"><h1>كارت تعريف</h1></div>
-
-      <div class="panel">
-        <label class="top-label">نوع الكارت</label>
-        <select class="big-select" id="regIdType" onchange="switchRegId()">
-          <option value="factory">كارت منظم مصنع</option>
-          <option value="regular">كارت منظم</option>
-        </select>
-      </div>
-
-      <!-- === Factory regulator card === -->
-      <div class="panel" id="regId-factory">
-        <h3 style="color:var(--navy); font-size:16px; margin-bottom:16px;">كارت منظم مصنع</h3>
-        <div class="form-grid">
-          <div class="f-item"><label>قطاع</label><input type="text"></div>
-          <div class="f-item"><label>المنطقة</label><input type="text"></div>
-          <div class="f-item"><label>سعة المنظم الرئيسي</label><input type="text"></div>
-          <div class="f-item"><label>تاريخ تشغيل المنظم</label><input type="date"></div>
-          <div class="f-item"><label>قطر رجل الخروج</label><input type="text"></div>
-          <div class="f-item"><label>قطر رجل الدخول</label><input type="text"></div>
-          <div class="f-item"><label>نوع محبس الدخول</label><input type="text"></div>
-          <div class="f-item"><label>قطر محبس الدخول الأرضي</label><input type="text"></div>
-          <div class="f-item"><label>نوع محبس الخروج</label><input type="text"></div>
-          <div class="f-item"><label>قطر محبس الخروج الأرضي</label><input type="text"></div>
-        </div>
-
-        <div class="sec-title">المنظم الرئيسي</div>
-        <div class="tbl-wrap">
-          <table class="data-tbl">
-            <thead><tr><th style="width:26%">المنظم الرئيسي</th><th>ضغط الدخول (الحالة قبل)</th><th>ضغط الخروج (الحالة بعد)</th><th>ملحوظة</th></tr></thead>
-            <tbody id="tbl-main-reg-factory"></tbody>
-          </table>
-        </div>
-
-        <div class="two-col">
-          <div>
-            <div class="sec-title">الولاعات</div>
-            <div class="tbl-wrap">
-              <table class="data-tbl">
-                <thead><tr><th>الولاعة</th><th>الموديل</th><th>الاستهلاك م³/س</th><th>Min Pressure</th><th>Max Pressure</th><th>ملحوظة</th></tr></thead>
-                <tbody id="tbl-lighters"></tbody>
-              </table>
-            </div>
-            <div class="form-grid" style="grid-template-columns:1fr 1fr; margin-top:14px;">
-              <div class="f-item"><label>تاريخ شهادة اختبار الشبكات الداخلية</label><input type="date"></div>
-              <div class="f-item"><label>رقم شهادة الاختبار للشبكات الداخلية</label><input type="text"></div>
-            </div>
-          </div>
-          <div>
-            <div class="sec-title">المنظمات الفرعية</div>
-            <div class="tbl-wrap">
-              <table class="data-tbl">
-                <thead><tr><th>المنظمات الفرعية</th><th>ضغط الدخول (قبل)</th><th>ضغط الخروج (بعد)</th><th>ملحوظة</th></tr></thead>
-                <tbody id="tbl-sub-reg-factory"></tbody>
-              </table>
-            </div>
-
-            <div class="sec-title">الحماية الكاثودية للمنظمات</div>
-            <div class="tbl-wrap">
-              <table class="data-tbl">
-                <thead><tr><th>Cathodic Protection للصاعد الأول</th><th>قبل/بعد الفلانشة</th><th>Cathodic Protection للصاعد الثاني</th><th>قبل/بعد الفلانشة</th></tr></thead>
-                <tbody><tr><td><input></td><td><input></td><td><input></td><td><input></td></tr></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <div class="sec-title">العدادات وتصحيح الحجم</div>
-        <div class="tbl-wrap">
-          <table class="data-tbl">
-            <thead><tr><th>العداد التوربيني</th><th>موديل</th><th>القراءة السابقة</th></tr></thead>
-            <tbody>
-              <tr><td class="row-label">العداد التوربيني</td><td><input></td><td><input></td></tr>
-              <tr><td class="row-label">القراءة الحالية</td><td><input></td><td><input></td></tr>
-              <tr><td class="row-label">Volume Corrector</td><td><input></td><td><input placeholder="القراءة السابقة"></td></tr>
-              <tr><td class="row-label">القراءة الحالية</td><td><input></td><td><input></td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="sec-title">بيانات ختامية</div>
-        <div class="form-grid">
-          <div class="f-item full"><label>ملحوظة</label><textarea></textarea></div>
-          <div class="f-item wide"><label>قطع الغيار التي تم استبدالها</label><textarea></textarea></div>
-          <div class="f-item wide"><label>قطع الغيار المطلوبة</label><textarea></textarea></div>
-        </div>
-
-        <div class="form-actions">
-          <button class="btn btn-primary">حفظ السجل</button>
-          <button class="btn btn-ghost">إلغاء</button>
-        </div>
-      </div>
-
-      <!-- === Regular regulator card === -->
-      <div class="panel" id="regId-regular" style="display:none;">
-        <h3 style="color:var(--navy); font-size:16px; margin-bottom:16px;">كارت منظم</h3>
-        <div class="form-grid">
-          <div class="f-item"><label>قطاع</label><input type="text"></div>
-          <div class="f-item"><label>المنطقة</label><input type="text"></div>
-          <div class="f-item"><label>سعة المنظم الرئيسي</label><input type="text"></div>
-          <div class="f-item"><label>تاريخ تشغيل المنظم</label><input type="date"></div>
-          <div class="f-item"><label>قطر رجل الخروج</label><input type="text"></div>
-          <div class="f-item"><label>قطر رجل الدخول</label><input type="text"></div>
-          <div class="f-item"><label>نوع محبس الدخول</label><input type="text"></div>
-          <div class="f-item"><label>قطر محبس الدخول الأرضي</label><input type="text"></div>
-          <div class="f-item"><label>نوع محبس الخروج</label><input type="text"></div>
-          <div class="f-item"><label>قطر محبس الخروج الأرضي</label><input type="text"></div>
-        </div>
-
-        <div class="two-col">
-          <div>
-            <div class="sec-title">العدادات وتصحيح الحجم</div>
-            <div class="tbl-wrap">
-              <table class="data-tbl">
-                <thead><tr><th>العداد التوربيني</th><th>موديل</th><th>القراءة السابقة</th></tr></thead>
-                <tbody>
-                  <tr><td class="row-label">العداد التوربيني</td><td><input></td><td><input></td></tr>
-                  <tr><td class="row-label">القراءة الحالية</td><td><input></td><td><input></td></tr>
-                  <tr><td class="row-label">Volume Corrector</td><td><input></td><td><input></td></tr>
-                  <tr><td class="row-label">القراءة الحالية</td><td><input></td><td><input></td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div>
-            <div class="sec-title">مقاومة التأريض</div>
-            <div class="tbl-wrap">
-              <table class="data-tbl">
-                <thead><tr><th>Earthing resistance</th><th>Beam</th><th>الحالة قبل</th><th>الحالة بعد</th></tr></thead>
-                <tbody>
-                  <tr><td class="row-label">—</td><td class="row-label">Beam 1</td><td><input></td><td><input></td></tr>
-                  <tr><td class="row-label">—</td><td class="row-label">Beam 2</td><td><input></td><td><input></td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <div class="sec-title">المنظم الرئيسي</div>
-        <div class="tbl-wrap">
-          <table class="data-tbl">
-            <thead><tr><th style="width:26%">المنظم الرئيسي</th><th>ضغط الدخول (الحالة قبل)</th><th>ضغط الخروج (الحالة بعد)</th><th>ملحوظة</th></tr></thead>
-            <tbody id="tbl-main-reg-regular"></tbody>
-          </table>
-        </div>
-
-        <div class="sec-title">بيانات ختامية</div>
-        <div class="form-grid">
-          <div class="f-item full"><label>ملحوظة</label><textarea></textarea></div>
-          <div class="f-item wide"><label>قطع الغيار التي تم استبدالها</label><textarea></textarea></div>
-          <div class="f-item wide"><label>قطع الغيار المطلوبة</label><textarea></textarea></div>
-        </div>
-
-        <div class="form-actions">
-          <button class="btn btn-primary">حفظ السجل</button>
-          <button class="btn btn-ghost">إلغاء</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============ REGULATORS: متابعة صيانة ============ -->
+    <!-- ============ REGULATORS: متابعة صيانة منظم ============ -->
     <div data-pageview="reg-followup" style="display:none;">
       <div class="breadcrumb">صيانات منظمات</div>
       <div class="page-head"><h1>متابعة صيانة منظم</h1></div>
       <div class="panel">
         <div class="form-grid">
+          <div class="f-item">
+            <label>نوع المنظم</label>
+            <select class="dd">
+              <option value="">اختر...</option>
+              <option value="سكني">سكني</option>
+              <option value="تجاري">تجاري</option>
+              <option value="صناعي">صناعي</option>
+            </select>
+          </div>
           <div class="f-item"><label>المنطقة</label><input type="text"></div>
           <div class="f-item"><label>قطاع</label><input type="text"></div>
           <div class="f-item"><label>رقم مسلسل</label><input type="text"></div>
@@ -1007,137 +861,96 @@
     </div>
 
     <!-- ============ REGULATORS: تقرير شهري ============ -->
-    <div data-pageview="reg-monthly" style="display:none;">
+    <!-- ============ REGULATORS: متابعة أعمال الصيانة بالمنظمات ============ -->
+    <div data-pageview="reg-work-log" style="display:none;">
       <div class="breadcrumb">صيانات منظمات</div>
-      <div class="page-head"><h1>تقرير شهري لأعمال صيانة الشبكات</h1></div>
+      <div class="page-head"><h1>متابعة أعمال الصيانة بالمنظمات</h1></div>
+      <div class="panel">
+        <div class="form-grid">
+          <div class="f-item"><label>اسم المنظم CRN</label><input type="text" placeholder="مثال: REG-1042"></div>
+          <div class="f-item">
+            <label>سعة المنظم</label>
+            <select class="dd">
+              <option value="">اختر...</option>
+              <option value="1000">1000</option>
+              <option value="2000">2000</option>
+              <option value="5000">5000</option>
+              <option value="10000">10000</option>
+            </select>
+          </div>
+          <div class="f-item">
+            <label>نوع التغذية</label>
+            <select class="dd">
+              <option value="">اختر...</option>
+              <option value="LEG">LEG</option>
+              <option value="LOOP">LOOP</option>
+            </select>
+          </div>
+          <div class="f-item">
+            <label>نوع الصيانة</label>
+            <select class="dd">
+              <option value="">اختر...</option>
+              <option value="طارئة">طارئة</option>
+              <option value="دورية">دورية</option>
+            </select>
+          </div>
+          <div class="f-item">
+            <label>نوع المشكلة</label>
+            <select class="dd">
+              <option value="">اختر...</option>
+              <option value="مؤشر عداد الفلتر به قراءة">مؤشر عداد الفلتر به قراءة</option>
+              <option value="إعادة ضبط">إعادة ضبط</option>
+            </select>
+          </div>
+          <div class="f-item"><label>تاريخ الملاحظة</label><input type="date"></div>
+          <div class="f-item">
+            <label>الإجراء المتخذ</label>
+            <select class="dd">
+              <option value="">اختر...</option>
+              <option value="تم إعادة ضبط">تم إعادة ضبط</option>
+              <option value="تنظيف فلتر + قراءة حماية كاثودية">تنظيف فلتر + قراءة حماية كاثودية</option>
+            </select>
+          </div>
+          <div class="f-item"><label>تاريخ الانتهاء</label><input type="date"></div>
+          <div class="f-item full"><label>ملاحظات</label><textarea placeholder="أي ملاحظات إضافية..."></textarea></div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary">حفظ السجل</button>
+          <button class="btn btn-ghost">إلغاء</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ REGULATORS: تقرير شهري لمتابعة الأعمال ============ -->
+    <div data-pageview="reg-work-report" style="display:none;">
+      <div class="breadcrumb">صيانات منظمات</div>
+      <div class="page-head"><h1>تقرير شهري لمتابعة الأعمال</h1></div>
 
       <div class="panel no-print">
         <div class="filter-bar">
-          <div class="filter-item"><label>من تاريخ</label><input type="date" id="m1-from"></div>
-          <div class="filter-item"><label>إلى تاريخ</label><input type="date" id="m1-to"></div>
-          <button class="btn btn-amber" onclick="genReport('m1')">عرض التقرير</button>
+          <div class="filter-item"><label>من تاريخ</label><input type="date" id="wr-from"></div>
+          <div class="filter-item"><label>إلى تاريخ</label><input type="date" id="wr-to"></div>
+          <button class="btn btn-amber" onclick="genWorkReport()">عرض التقرير</button>
         </div>
       </div>
 
-      <div class="panel report-hidden" id="m1-report">
+      <div class="panel report-hidden" id="wr-report">
         <div class="report-title no-print" style="text-align:left; margin-bottom:10px;">
           <button class="btn btn-ghost" onclick="window.print()">🖨 طباعة التقرير</button>
         </div>
         <div class="report-title">
-          <h2 id="m1-title">التقرير الشهري لأعمال صيانة شبكات الغاز الطبيعي</h2>
-          <p id="m1-range">الفترة: —</p>
+          <h2>تقرير شهري لمتابعة أعمال الصيانة بالمنظمات</h2>
+          <p id="wr-range">الفترة: —</p>
         </div>
-
-        <div class="sec-title">1. إجمالي الشبكات العاملة بالغاز الطبيعي (كم)</div>
-        <div class="tbl-wrap"><table class="data-tbl">
-          <thead><tr><th>الخطوط</th><th>خلال الشهر</th><th>حتى تاريخه</th></tr></thead>
-          <tbody>
-            <tr><td class="row-label">ضغط منخفض</td><td><input value="12.4"></td><td><input value="184.2"></td></tr>
-            <tr><td class="row-label">ضغط 4 بار</td><td><input value="3.1"></td><td><input value="41.6"></td></tr>
-            <tr><td class="row-label">ضغط 7 بار</td><td><input value="0.8"></td><td><input value="9.3"></td></tr>
-            <tr><td class="row-label">الإجمالي</td><td><input value="16.3"></td><td><input value="235.1"></td></tr>
-          </tbody>
-        </table></div>
-
-        <div class="sec-title">2. عدد المنظمات العاملة بالغاز الطبيعي</div>
-        <div class="tbl-wrap"><table class="data-tbl">
-          <thead><tr><th>المنظمات</th><th>خلال الشهر</th><th>حتى تاريخه</th></tr></thead>
-          <tbody>
-            <tr><td class="row-label">رئيسية &gt; 1000 scm/hr</td><td><input value="4"></td><td><input value="52"></td></tr>
-            <tr><td class="row-label">فرعية حتى 1000 scm/hr</td><td><input value="17"></td><td><input value="210"></td></tr>
-          </tbody>
-        </table></div>
-
-        <div class="sec-title">3. عدد المحابس</div>
-        <div class="tbl-wrap"><table class="data-tbl">
-          <thead><tr><th>الضغط</th><th>خلال الشهر</th><th>حتى تاريخه</th></tr></thead>
-          <tbody>
-            <tr><td class="row-label">ضغط منخفض</td><td><input value="38"></td><td><input value="612"></td></tr>
-            <tr><td class="row-label">ضغط 4 بار</td><td><input value="9"></td><td><input value="140"></td></tr>
-            <tr><td class="row-label">ضغط 7 بار</td><td><input value="2"></td><td><input value="27"></td></tr>
-            <tr><td class="row-label">الإجمالي</td><td><input value="49"></td><td><input value="779"></td></tr>
-          </tbody>
-        </table></div>
-
-        <div class="sec-title">4. موقف تنفيذ خطة صيانة الشبكات خلال الشهر</div>
-        <div class="two-col">
-          <div>
-            <div style="font-weight:600; font-size:13px; color:var(--navy-soft); margin-bottom:8px;">بيان المنظمات طبقًا لخطة الصيانة</div>
-            <div class="form-grid" style="grid-template-columns:1fr;">
-              <div class="f-item"><label>مستهدف</label><input value="21"></div>
-              <div class="f-item"><label>فعلي</label><input value="19"></div>
-              <div class="f-item"><label>النسبة الفعلية</label><input value="90%"></div>
-            </div>
-          </div>
-          <div>
-            <div style="font-weight:600; font-size:13px; color:var(--navy-soft); margin-bottom:8px;">بيان المحابس طبقًا لخطة الصيانة</div>
-            <div class="form-grid" style="grid-template-columns:1fr;">
-              <div class="f-item"><label>مستهدف</label><input value="49"></div>
-              <div class="f-item"><label>فعلي</label><input value="45"></div>
-              <div class="f-item"><label>النسبة الفعلية</label><input value="92%"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="sec-title">5. تصنيف الصيانات التي تمت بمنظمات الشبكة</div>
         <div class="tbl-wrap"><table class="data-tbl">
           <thead><tr>
-            <th>إجراءات الصيانة</th><th>دهان المنظم</th><th>إصلاح أبواب وغطاء</th><th>إصلاح تسريب وصلات ميكانيكية</th><th>اختبار محابس داخلية</th><th>قياس سلامة الوصلة العازلة</th><th>تنظيف الفلتر</th><th>تغيير الفلتر</th><th>تدوير أجزاء أفقي</th><th>تدوير أجزاء رأسي</th><th>تغيير أجزاء مطاطية</th><th>تنظيف فلتر الحقن</th><th>مراقبة الغلق</th><th>إعادة ضبط المنظم</th>
+            <th>اسم المنظم CRN</th><th>سعة المنظم</th><th>نوع التغذية</th><th>نوع الصيانة</th><th>نوع المشكلة</th><th>تاريخ الملاحظة</th><th>الإجراء المتخذ</th><th>تاريخ الانتهاء</th><th>ملاحظات</th>
           </tr></thead>
-          <tbody id="m1-tbl-reg-maint"></tbody>
-        </table></div>
-
-        <div class="sec-title">6. تصنيف الصيانات التي تمت بمحابس الشبكة</div>
-        <div class="tbl-wrap"><table class="data-tbl">
-          <thead><tr>
-            <th>إجراءات الصيانة</th><th>اختبار محبس رئيسي</th><th>كشف تسريب محبس رئيسي</th><th>كشف تسريب نقطة اختبار</th><th>إصلاح تسريب محبس رئيسي</th><th>رفع منسوب صندوق محبس</th><th>تغيير صندوق محبس</th><th>تنظيف مدخل محبس رئيسي</th>
-          </tr></thead>
-          <tbody id="m1-tbl-valve-maint"></tbody>
-        </table></div>
-
-        <div class="sec-title">7. بيان أعمال صيانة نظام الحماية الكاثودية</div>
-        <div style="font-weight:600; font-size:13px; color:var(--navy-soft); margin:10px 0 6px;">نظام دفع التيار</div>
-        <div class="tbl-wrap"><table class="data-tbl">
-          <thead><tr><th>إجمالي نقط القياس</th><th>تغير تركيب ترامل</th><th>تغير أعدة قياس</th><th>دهان أعدة قياس</th><th>إضافة أعدة قياس</th><th>زيادة منسوب الزيت</th><th>توصيل التيار للموحد</th><th>إعادة ضبط الموحد</th></tr></thead>
-          <tbody><tr id="m1-tbl-current"></tr></tbody>
-        </table></div>
-        <div style="font-weight:600; font-size:13px; color:var(--navy-soft); margin:14px 0 6px;">نظام الأقطاب التضحية</div>
-        <div class="tbl-wrap"><table class="data-tbl">
-          <thead><tr><th>إجمالي نقط الحماية</th><th>تغير تركيب ترامل</th><th>تغير أعمدة حماية</th><th>إصلاح أعمدة حماية</th><th>دهان أعمدة حماية</th><th>إضافة أعمدة حماية</th></tr></thead>
-          <tbody><tr id="m1-tbl-sacrificial"></tr></tbody>
+          <tbody id="wr-tbody"></tbody>
         </table></div>
       </div>
     </div>
 
-    <!-- ============ REGULATORS: تقرير شهري لمنظمات الغاز ============ -->
-    <div data-pageview="reg-gas-monthly" style="display:none;">
-      <div class="breadcrumb">صيانات منظمات</div>
-      <div class="page-head"><h1>تقرير شهري لمنظمات الغاز</h1></div>
-
-      <div class="panel no-print">
-        <div class="filter-bar">
-          <div class="filter-item"><label>من تاريخ</label><input type="date" id="m2-from"></div>
-          <div class="filter-item"><label>إلى تاريخ</label><input type="date" id="m2-to"></div>
-          <button class="btn btn-amber" onclick="genReport('m2')">عرض التقرير</button>
-        </div>
-      </div>
-
-      <div class="panel report-hidden" id="m2-report">
-        <div class="report-title no-print" style="text-align:left; margin-bottom:10px;">
-          <button class="btn btn-ghost" onclick="window.print()">🖨 طباعة التقرير</button>
-        </div>
-        <div class="report-title">
-          <h2>تقرير شهري لمنظمات الغاز</h2>
-          <p id="m2-range">الفترة: —</p>
-        </div>
-        <div class="tbl-wrap"><table class="data-tbl">
-          <thead><tr>
-            <th>اسم المنظم CRN</th><th>سعة المنظم</th><th>نوع التغذية</th><th>نوع الصيانة</th><th>نوع المشكلة</th><th>تاريخ الملاحظة</th><th>الإجراء المتخذ</th><th>تاريخ الانتهاء</th><th>الملاحظات</th>
-          </tr></thead>
-          <tbody id="m2-tbody"></tbody>
-        </table></div>
-      </div>
-    </div>
 
   </main>
 
@@ -1147,16 +960,13 @@
 /* ============ PAGE REGISTRY ============ */
 const pageMeta = {
   'home': {group:'home', crumb:'', title:'الرئيسية'},
-  'facility-residential': {group:'facility', crumb:'صيانة منشأ', title:'سكني'},
-  'facility-commercial': {group:'facility', crumb:'صيانة منشأ', title:'تجاري'},
-  'facility-industrial': {group:'facility', crumb:'صيانة منشأ', title:'صناعي'},
+  'facility-entry': {group:'facility', crumb:'صيانة وقائية', title:'تسجيل حالة'},
+  'facility-report': {group:'facility', crumb:'صيانة وقائية', title:'تقرير'},
   'valves-maintenance': {group:'valves', crumb:'محابس', title:'صيانة المحابس'},
-  'valves-id': {group:'valves', crumb:'محابس', title:'كارت تعريف'},
-  'valves-network': {group:'valves', crumb:'محابس', title:'صيانات مكونات شبكة'},
-  'reg-id': {group:'regulators', crumb:'صيانات منظمات', title:'كارت تعريف'},
-  'reg-followup': {group:'regulators', crumb:'صيانات منظمات', title:'متابعة صيانة'},
-  'reg-monthly': {group:'regulators', crumb:'صيانات منظمات', title:'تقرير شهري'},
-  'reg-gas-monthly': {group:'regulators', crumb:'صيانات منظمات', title:'تقرير شهري لمنظمات الغاز'},
+  'valves-monthly': {group:'valves', crumb:'محابس', title:'تقرير شهري لصيانة المحابس'},
+  'reg-followup': {group:'regulators', crumb:'صيانات منظمات', title:'متابعة صيانة منظم'},
+  'reg-work-log': {group:'regulators', crumb:'صيانات منظمات', title:'متابعة أعمال الصيانة بالمنظمات'},
+  'reg-work-report': {group:'regulators', crumb:'صيانات منظمات', title:'تقرير شهري لمتابعة الأعمال'},
 };
 
 function openSidebar(){
@@ -1177,21 +987,34 @@ function toggleGroup(g){
   });
 }
 
-/* ============ SEGMENTED BUTTONS (yes/no, good/bad, etc.) ============ */
-function segPick(btn, kind){
-  const group = btn.parentElement;
-  group.querySelectorAll('button').forEach(b=>{
-    b.classList.remove('on-good','on-bad');
-  });
-  if(kind==='good') btn.classList.add('on-good');
-  else if(kind==='bad') btn.classList.add('on-bad');
-  else btn.classList.add('on-good'); // neutral selection still shows active state
+/* ============ COLORED DROPDOWNS (good/bad tone based on selected option) ============ */
+function ddColor(sel){
+  sel.classList.remove('dd-good','dd-bad');
+  const opt = sel.options[sel.selectedIndex];
+  const tone = opt ? opt.dataset.tone : null;
+  if(tone==='good') sel.classList.add('dd-good');
+  else if(tone==='bad') sel.classList.add('dd-bad');
+}
+
+/* ============ FACILITY: محافظة -> منطقة dependent dropdown ============ */
+const areaOptions = {
+  'قليوبية': ['القلج','الجبل الأصفر'],
+  'قاهرة': ['بدر','مدينتي','هليوبوليس','سراي','نور','كابيتال جراندز','مستقبل','حدائق العاصمة'],
+};
+function updateAreaOptions(){
+  const gov = document.getElementById('fe-gov').value;
+  const areaSel = document.getElementById('fe-area');
+  if(!gov){
+    areaSel.innerHTML = '<option value="">اختر المحافظة أولاً</option>';
+    return;
+  }
+  const opts = areaOptions[gov] || [];
+  areaSel.innerHTML = '<option value="">اختر...</option>' + opts.map(o=>`<option value="${o}">${o}</option>`).join('');
 }
 
 /* ============ REGULATOR MAIN TABLE ROWS (shared structure) ============ */
 const mainRegRows = ['الوحدات','Inlet Valve','Outlet Valve','رجل دخول (Cathodic Protection)','رجل الخروج (Cathodic Protection)','جسم المنظم (Cathodic Protection)','Filter','Stream 1 - Active','Stream 1 - Monitor','Stream 1 - Relief Valve','Stream 1 - Slumshut','Stream 2 - Active','Stream 2 - Monitor','Stream 2 - Relief Valve','Stream 2 - Slumshut'];
 const subRegRows = ['الوحدات','منظم فرعي 1','منظم فرعي 2'];
-const lighterRows = ['ولاعة رقم 1','ولاعة رقم 2','ولاعة رقم 3','ولاعة رقم 4'];
 
 function fillTable(tbodyId, rows, cols){
   const tbody = document.getElementById(tbodyId);
@@ -1203,40 +1026,8 @@ function fillTable(tbodyId, rows, cols){
   }).join('');
 }
 
-fillTable('tbl-main-reg-factory', mainRegRows, 3);
-fillTable('tbl-sub-reg-factory', subRegRows, 3);
-fillTable('tbl-main-reg-regular', mainRegRows, 3);
 fillTable('tbl-main-reg-followup', mainRegRows, 3);
 fillTable('tbl-sub-reg-followup', subRegRows, 3);
-fillTable('tbl-lighters', lighterRows, 5);
-
-/* Simple N-cell rows without labels */
-function fillPlainRow(elId, cols){
-  const el = document.getElementById(elId);
-  if(!el) return;
-  el.innerHTML = Array.from({length:cols}).map(()=>`<td><input></td>`).join('');
-}
-fillPlainRow('m1-tbl-current', 8);
-fillPlainRow('m1-tbl-sacrificial', 6);
-
-function fillLabeledRows(tbodyId, labels, cols){
-  const tbody = document.getElementById(tbodyId);
-  if(!tbody) return;
-  tbody.innerHTML = labels.map(l=>{
-    let cells = `<td class="row-label">${l}</td>`;
-    for(let i=0;i<cols;i++) cells += `<td><input></td>`;
-    return `<tr>${cells}</tr>`;
-  }).join('');
-}
-fillLabeledRows('m1-tbl-reg-maint', ['إصلاحات طارئة','أعمال صيانة دورية'], 13);
-fillLabeledRows('m1-tbl-valve-maint', ['إصلاحات طارئة','أعمال صيانة دورية'], 7);
-
-/* ============ REGULATOR ID CARD: switch between factory / regular ============ */
-function switchRegId(){
-  const val = document.getElementById('regIdType').value;
-  document.getElementById('regId-factory').style.display = (val==='factory') ? 'block' : 'none';
-  document.getElementById('regId-regular').style.display = (val==='regular') ? 'block' : 'none';
-}
 
 /* ============ REPORTS ============ */
 function fmtDate(d){
@@ -1245,31 +1036,56 @@ function fmtDate(d){
   return `${day}/${m}/${y}`;
 }
 
-function genReport(which){
-  if(which==='m1'){
-    const from = document.getElementById('m1-from').value;
-    const to = document.getElementById('m1-to').value;
-    if(!from || !to){ alert('يرجى تحديد الفترة من وإلى أولًا'); return; }
-    document.getElementById('m1-range').textContent = `الفترة من ${fmtDate(from)} إلى ${fmtDate(to)}`;
-    document.getElementById('m1-report').classList.remove('report-hidden');
-  }
-  if(which==='m2'){
-    const from = document.getElementById('m2-from').value;
-    const to = document.getElementById('m2-to').value;
-    if(!from || !to){ alert('يرجى تحديد الفترة من وإلى أولًا'); return; }
-    document.getElementById('m2-range').textContent = `الفترة من ${fmtDate(from)} إلى ${fmtDate(to)}`;
+/* --- تقرير الصيانة الوقائية --- */
+function genFacilityReport(){
+  const from = document.getElementById('fr-from').value;
+  const to = document.getElementById('fr-to').value;
+  if(!from || !to){ alert('يرجى تحديد الفترة من وإلى أولًا'); return; }
+  document.getElementById('fr-range').textContent = `الفترة من ${fmtDate(from)} إلى ${fmtDate(to)}`;
 
-    // Sample filtered rows to illustrate the report - a real system would query saved records
-    const sample = [
-      ['REG-1042','1200 scm/hr','LOOP','دورية','—',from,'فحص وصيانة دورية',to,'لا يوجد ملاحظات'],
-      ['REG-0731','850 scm/hr','LEG','طارئة','تسريب بوصلة ميكانيكية',from,'إصلاح التسريب واستبدال حلقة',to,'تم الإصلاح بنجاح'],
-      ['REG-0219','2000 scm/hr','LOOP','دورية','—',from,'تنظيف فلتر وضبط الضغط',to,'—'],
-    ];
-    document.getElementById('m2-tbody').innerHTML = sample.map(row=>
-      `<tr>${row.map(c=>`<td>${c}</td>`).join('')}</tr>`
-    ).join('');
-    document.getElementById('m2-report').classList.remove('report-hidden');
-  }
+  // بيانات توضيحية - في النظام الحقيقي هيتم جلبها من السجلات المحفوظة بالفترة المحددة
+  const sample = [
+    [from,'تم إصلاح التسريب','سكني','أحمد محمود',from,'يوجد','لا يوجد','سليم','لا يوجد','يوجد','سليم','12','3','القطاع الأول','قاهرة','بدر'],
+    [to,'—','تجاري','محمد علي',to,'لا يوجد','يوجد','غير سليم','لا يوجد','يوجد','غير سليم','7','1','القطاع الثاني','قليوبية','القلج'],
+  ];
+  document.getElementById('fr-tbody').innerHTML = sample.map(row=>
+    `<tr>${row.map(c=>`<td>${c}</td>`).join('')}</tr>`
+  ).join('');
+  document.getElementById('fr-report').classList.remove('report-hidden');
+}
+
+/* --- تقرير شهري لصيانة المحابس --- */
+function genValvesMonthly(){
+  const from = document.getElementById('vm-from').value;
+  const to = document.getElementById('vm-to').value;
+  if(!from || !to){ alert('يرجى تحديد الفترة من وإلى أولًا'); return; }
+  document.getElementById('vm-range').textContent = `الفترة من ${fmtDate(from)} إلى ${fmtDate(to)}`;
+
+  const sample = [
+    ['VLV-2210','صلب4بوصة','دورية','—',from,'فحص وتشحيم',to,'—'],
+    ['VLV-1187','بولي تك','طارئة','تسريب بمدخل المحبس',from,'إصلاح التسريب',to,'تم الإصلاح'],
+  ];
+  document.getElementById('vm-tbody').innerHTML = sample.map(row=>
+    `<tr>${row.map(c=>`<td>${c}</td>`).join('')}</tr>`
+  ).join('');
+  document.getElementById('vm-report').classList.remove('report-hidden');
+}
+
+/* --- تقرير شهري لمتابعة أعمال الصيانة بالمنظمات --- */
+function genWorkReport(){
+  const from = document.getElementById('wr-from').value;
+  const to = document.getElementById('wr-to').value;
+  if(!from || !to){ alert('يرجى تحديد الفترة من وإلى أولًا'); return; }
+  document.getElementById('wr-range').textContent = `الفترة من ${fmtDate(from)} إلى ${fmtDate(to)}`;
+
+  const sample = [
+    ['REG-1042','1000','LOOP','دورية','إعادة ضبط',from,'تم إعادة ضبط',to,'لا يوجد ملاحظات'],
+    ['REG-0731','5000','LEG','طارئة','مؤشر عداد الفلتر به قراءة',from,'تنظيف فلتر + قراءة حماية كاثودية',to,'تم الإصلاح بنجاح'],
+  ];
+  document.getElementById('wr-tbody').innerHTML = sample.map(row=>
+    `<tr>${row.map(c=>`<td>${c}</td>`).join('')}</tr>`
+  ).join('');
+  document.getElementById('wr-report').classList.remove('report-hidden');
 }
 
 function showPage(id){

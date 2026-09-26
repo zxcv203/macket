@@ -679,13 +679,18 @@
           <div class="f-item"><label>رقم المحبس</label><input type="text" placeholder="رقم المحبس"></div>
           <div class="f-item">
             <label>نوع المحبس</label>
-            <select class="dd">
+            <select class="dd" id="vmnt-type" onchange="updateValveDiameter()">
               <option value="">اختر...</option>
               <option value="بولي تك">بولي تك</option>
               <option value="صلب">صلب</option>
             </select>
           </div>
-          <div class="f-item"><label>قطر المحبس</label><input type="text" placeholder="القطر"></div>
+          <div class="f-item">
+            <label>قطر المحبس</label>
+            <select class="dd" id="vmnt-diameter">
+              <option value="">اختر نوع المحبس أولاً</option>
+            </select>
+          </div>
           <div class="f-item"><label>منسوب المحبس</label><input type="text" placeholder="المنسوب"></div>
           <div class="f-item">
             <label>P.V.C</label>
@@ -696,7 +701,14 @@
             </select>
           </div>
           <div class="f-item"><label>تاريخ تركيب P.V.C</label><input type="date"></div>
-          <div class="f-item"><label>نظافة المحبس</label><input type="text" placeholder="ملاحظة النظافة"></div>
+          <div class="f-item">
+            <label>نظافة المحبس</label>
+            <select class="dd" onchange="ddColor(this)">
+              <option value="">اختر...</option>
+              <option value="نظيف" data-tone="good">نظيف</option>
+              <option value="غير نظيف" data-tone="bad">غير نظيف</option>
+            </select>
+          </div>
           <div class="f-item">
             <label>كشف التسريب</label>
             <select class="dd" onchange="ddColor(this)">
@@ -732,7 +744,33 @@
           </div>
           <div class="f-item"><label>تاريخ صيانة المحبس</label><input type="date"></div>
           <div class="f-item"><label>تاريخ معالجة المشكلة</label><input type="date"></div>
+          <div class="f-item">
+            <label>نوع الصيانة</label>
+            <select class="dd">
+              <option value="">اختر...</option>
+              <option value="طارئة">طارئة</option>
+              <option value="دورية">دورية</option>
+            </select>
+          </div>
+          <div class="f-item"><label>نوع المشكلة</label><input type="text" placeholder="وصف المشكلة"></div>
+          <div class="f-item"><label>الإجراء المتخذ</label><input type="text" placeholder="الإجراء الذي تم اتخاذه"></div>
           <div class="f-item"><label>القائم بالعمل</label><input type="text" placeholder="اسم الفني"></div>
+
+          <div class="f-item">
+            <label>محافظة</label>
+            <select class="dd" id="vmnt-gov" onchange="updateAreaOptionsGeneric('vmnt-gov','vmnt-area')">
+              <option value="">اختر...</option>
+              <option value="قاهرة">قاهرة</option>
+              <option value="قليوبية">قليوبية</option>
+            </select>
+          </div>
+          <div class="f-item">
+            <label>منطقة</label>
+            <select class="dd" id="vmnt-area">
+              <option value="">اختر المحافظة أولاً</option>
+            </select>
+          </div>
+
           <div class="f-item full"><label>ملحوظة</label><textarea placeholder="أي ملاحظات إضافية..."></textarea></div>
         </div>
         <div class="form-actions">
@@ -788,7 +826,20 @@
               <option value="صناعي">صناعي</option>
             </select>
           </div>
-          <div class="f-item"><label>المنطقة</label><input type="text"></div>
+          <div class="f-item">
+            <label>محافظة</label>
+            <select class="dd" id="regf-gov" onchange="updateAreaOptionsGeneric('regf-gov','regf-area')">
+              <option value="">اختر...</option>
+              <option value="قاهرة">قاهرة</option>
+              <option value="قليوبية">قليوبية</option>
+            </select>
+          </div>
+          <div class="f-item">
+            <label>منطقة</label>
+            <select class="dd" id="regf-area">
+              <option value="">اختر المحافظة أولاً</option>
+            </select>
+          </div>
           <div class="f-item"><label>قطاع</label><input type="text"></div>
           <div class="f-item"><label>رقم مسلسل</label><input type="text"></div>
           <div class="f-item"><label>قطر رجل الدخول</label><input type="text"></div>
@@ -996,20 +1047,37 @@ function ddColor(sel){
   else if(tone==='bad') sel.classList.add('dd-bad');
 }
 
-/* ============ FACILITY: محافظة -> منطقة dependent dropdown ============ */
+/* ============ محافظة -> منطقة dependent dropdown (مستخدمة في عدة صفحات) ============ */
 const areaOptions = {
   'قليوبية': ['القلج','الجبل الأصفر'],
   'قاهرة': ['بدر','مدينتي','هليوبوليس','سراي','نور','كابيتال جراندز','مستقبل','حدائق العاصمة'],
 };
-function updateAreaOptions(){
-  const gov = document.getElementById('fe-gov').value;
-  const areaSel = document.getElementById('fe-area');
+function updateAreaOptionsGeneric(govId, areaId){
+  const gov = document.getElementById(govId).value;
+  const areaSel = document.getElementById(areaId);
   if(!gov){
     areaSel.innerHTML = '<option value="">اختر المحافظة أولاً</option>';
     return;
   }
   const opts = areaOptions[gov] || [];
   areaSel.innerHTML = '<option value="">اختر...</option>' + opts.map(o=>`<option value="${o}">${o}</option>`).join('');
+}
+function updateAreaOptions(){ updateAreaOptionsGeneric('fe-gov','fe-area'); }
+
+/* ============ VALVES: نوع المحبس -> قطر المحبس dependent dropdown ============ */
+const valveDiameterOptions = {
+  'بولي تك': ['250','180','125','90','63'],
+  'صلب': ['2 بوصة','3 بوصة','4 بوصة','6 بوصة','8 بوصة','10 بوصة','12 بوصة'],
+};
+function updateValveDiameter(){
+  const type = document.getElementById('vmnt-type').value;
+  const diaSel = document.getElementById('vmnt-diameter');
+  if(!type){
+    diaSel.innerHTML = '<option value="">اختر نوع المحبس أولاً</option>';
+    return;
+  }
+  const opts = valveDiameterOptions[type] || [];
+  diaSel.innerHTML = '<option value="">اختر...</option>' + opts.map(o=>`<option value="${o}">${o}</option>`).join('');
 }
 
 /* ============ REGULATOR MAIN TABLE ROWS (shared structure) ============ */

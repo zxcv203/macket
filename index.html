@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>نظام إدخال بيانات الصيانة</title>
+<title>الحديثة للغاز الطبيعي</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -32,6 +32,8 @@
     font-family: 'IBM Plex Sans Arabic', sans-serif;
     font-size: 15px;
     line-height: 1.6;
+    overflow-x: hidden;
+    max-width: 100%;
   }
   h1, h2, h3 { margin: 0; font-weight: 700; }
   button { font-family: inherit; cursor: pointer; }
@@ -108,6 +110,11 @@
     font-weight: 700;
     font-size: 17px;
     margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .brand-mark img, .dot img {
+    width: 100%; height: 100%;
+    object-fit: contain;
   }
   .brand-name { font-size: 15px; font-weight: 700; color: #fff; }
   .brand-sub { font-size: 12px; color: #A9C0C2; margin-top: 2px; }
@@ -179,6 +186,9 @@
     border-radius: 10px;
     padding: 22px 24px;
     margin-bottom: 20px;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 
   .field-select {
@@ -296,8 +306,30 @@
     padding-right: 10px;
     border-right: 3px solid var(--amber);
   }
+  .sec-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 26px 0 10px 0;
+  }
+  .sec-title-row .sec-title { margin: 0; }
+  .btn-add-row {
+    background: var(--amber-soft);
+    color: #8A5A12;
+    border: 1px solid var(--amber);
+    border-radius: 7px;
+    padding: 6px 14px;
+    font-size: 12.5px;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .btn-add-row:hover { background: var(--amber); color: var(--navy); }
+
   table.data-tbl {
     width: 100%;
+    min-width: 560px;
     border-collapse: collapse;
     font-size: 13.3px;
   }
@@ -305,28 +337,49 @@
     background: var(--navy);
     color: #EAF1F0;
     font-weight: 600;
-    padding: 9px 10px;
+    padding: 10px 12px;
     text-align: right;
     font-size: 12.5px;
+    white-space: nowrap;
   }
   table.data-tbl td {
-    padding: 8px 10px;
+    padding: 6px 8px;
     border-bottom: 1px solid var(--line);
+    border-left: 1px solid var(--line);
   }
+  table.data-tbl td:last-child { border-left: none; }
   table.data-tbl tr:nth-child(even) td { background: var(--row-alt); }
-  table.data-tbl td.row-label { font-weight: 600; color: var(--navy-soft); white-space: nowrap; }
+  table.data-tbl td.row-label {
+    font-weight: 600;
+    color: var(--navy-soft);
+    white-space: nowrap;
+    background: #EFF3F2;
+  }
+  table.data-tbl tr:nth-child(even) td.row-label { background: #E7ECEA; }
   table.data-tbl input {
     width: 100%;
-    border: 1px solid transparent;
-    background: transparent;
-    padding: 5px 6px;
-    border-radius: 5px;
+    min-width: 90px;
+    border: 1.5px solid var(--line);
+    background: #fff;
+    padding: 7px 9px;
+    border-radius: 6px;
     font-size: 13px;
+    color: var(--ink);
   }
-  table.data-tbl input:hover { border-color: var(--line); }
-  table.data-tbl input:focus { border-color: var(--amber); background: #fff; outline: none; }
-  .tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; }
+  table.data-tbl input:hover { border-color: #B9C4C2; }
+  table.data-tbl input:focus { border-color: var(--amber); outline: none; box-shadow: 0 0 0 2px var(--amber-soft); }
+  .tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; -webkit-overflow-scrolling: touch; }
   .tbl-wrap table { border: none; }
+  .btn-del-row {
+    background: var(--bad-bg);
+    color: var(--bad);
+    border: 1px solid var(--bad);
+    border-radius: 5px;
+    padding: 4px 9px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .btn-del-row:hover { background: var(--bad); color: #fff; }
 
   .two-col {
     display: grid;
@@ -334,6 +387,7 @@
     gap: 20px;
     align-items: start;
   }
+  .two-col > div { min-width: 0; }
   @media (max-width: 1000px) { .two-col { grid-template-columns: 1fr; } }
 
   .badge {
@@ -434,7 +488,10 @@
 
     .sec-title { font-size: 13.5px; margin: 20px 0 8px 0; }
 
-    table.data-tbl { font-size: 12.5px; }
+    .sec-title-row { flex-wrap: wrap; }
+    .btn-add-row { font-size: 12px; padding: 5px 10px; }
+
+    table.data-tbl { font-size: 12.5px; min-width: 460px; }
     table.data-tbl th, table.data-tbl td { padding: 7px 8px; }
   }
 
@@ -444,10 +501,14 @@
   }
 
   @media print {
-    .sidebar, .page-head, .filter-bar, .no-print, .form-actions { display: none !important; }
+    .sidebar, .filter-bar, .no-print, .form-actions { display: none !important; }
     .main { padding: 0; }
     .panel { border: none; padding: 0; }
     body { background: #fff; }
+    .page-head { border-bottom: 2px solid #000; margin-bottom: 16px; padding-bottom: 10px; }
+    table.data-tbl { min-width: 0; }
+    .tbl-wrap { overflow: visible; border: none; }
+    table.data-tbl th { background: #E5E5E5 !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   }
 </style>
 </head>
@@ -457,8 +518,8 @@
   <!-- ============ MOBILE TOPBAR ============ -->
   <div class="mobile-topbar">
     <div class="brand-mini">
-      <div class="dot">غ</div>
-      <span>نظام سجلات الصيانة</span>
+      <div class="dot" id="logoMiniSlot"><img src="logo.jpg" alt="شعار الشركة"></div>
+      <span>الحديثة للغاز الطبيعي</span>
     </div>
     <button class="menu-btn" onclick="openSidebar()" aria-label="فتح القائمة">☰</button>
   </div>
@@ -469,8 +530,14 @@
   <nav class="sidebar" id="sidebarNav">
     <button class="sidebar-close" onclick="closeSidebar()" aria-label="إغلاق القائمة">✕</button>
     <div class="brand">
-      <div class="brand-mark">غ</div>
-      <div class="brand-name">نظام سجلات الصيانة</div>
+      <!--
+        مكان اللوجو: استبدل الحرف "غ" بصورة اللوجو الحقيقية بإحدى الطريقتين:
+        1) <div class="brand-mark" id="logoSlot"><img src="اسم-الصورة.png" alt="شعار الشركة"></div>
+        2) أو ضع الصورة في الخلفية عبر CSS: #logoSlot { background-image: url('logo.jpg'); }
+        نفس الأمر لعنصر id="logoMiniSlot" في الشريط العلوي الخاص بالموبايل فوق.
+      -->
+      <div class="brand-mark" id="logoSlot"><img src="logo.jp" alt="شعار الشركة"></div
+      <div class="brand-name">الحديثة للغاز الطبيعي</div>
       <div class="brand-sub">إدارة شبكات الغاز الطبيعي</div>
     </div>
 
@@ -814,7 +881,10 @@
     <!-- ============ REGULATORS: متابعة صيانة منظم ============ -->
     <div data-pageview="reg-followup" style="display:none;">
       <div class="breadcrumb">صيانات منظمات</div>
-      <div class="page-head"><h1>متابعة صيانة منظم</h1></div>
+      <div class="page-head">
+        <h1>متابعة صيانة منظم</h1>
+        <button class="btn btn-ghost no-print" onclick="window.print()">🖨 طباعة كارت متابعه صيانه منظم</button>
+      </div>
       <div class="panel">
         <div class="form-grid">
           <div class="f-item">
@@ -830,7 +900,7 @@
             <label>محافظة</label>
             <select class="dd" id="regf-gov" onchange="updateAreaOptionsGeneric('regf-gov','regf-area')">
               <option value="">اختر...</option>
-              <option value="قاهرة">قاهرة</option>
+              <option value="القاهرة">قاهرة</option>
               <option value="قليوبية">قليوبية</option>
             </select>
           </div>
@@ -862,21 +932,25 @@
 
         <div class="two-col">
           <div>
-            <div class="sec-title">المنظمات الفرعية</div>
+            <div class="sec-title-row">
+              <div class="sec-title">المنظمات الفرعية</div>
+              <button type="button" class="btn-add-row no-print" onclick="addSubRegRow('tbl-sub-reg-followup')">+ إضافة منظم فرعي</button>
+            </div>
             <div class="tbl-wrap">
               <table class="data-tbl">
-                <thead><tr><th>المنظمات الفرعية</th><th>ضغط الدخول (قبل)</th><th>ضغط الخروج (بعد)</th><th>ملحوظة</th></tr></thead>
+                <thead><tr><th>المنظمات الفرعية</th><th>ضغط الدخول (قبل)</th><th>ضغط الخروج (بعد)</th><th>ملحوظة</th><th class="no-print" style="width:1%"></th></tr></thead>
                 <tbody id="tbl-sub-reg-followup"></tbody>
               </table>
             </div>
-            <div class="sec-title">الحماية الكاثودية</div>
+
+            <div class="sec-title-row">
+              <div class="sec-title">الحماية الكاثودية</div>
+              <button type="button" class="btn-add-row no-print" onclick="addCathodicRow('tbl-cathodic-followup')">+ إضافة صاعد</button>
+            </div>
             <div class="tbl-wrap">
               <table class="data-tbl">
-                <thead><tr><th>الصاعد الأول</th><th>قبل الفلانشة</th><th>بعد الفلانشة</th></tr></thead>
-                <tbody>
-                  <tr><td class="row-label">Cathodic Protection</td><td><input></td><td><input></td></tr>
-                  <tr><td class="row-label">الصاعد الثاني</td><td><input></td><td><input></td></tr>
-                </tbody>
+                <thead><tr><th>الصاعد</th><th>قبل الفلانشة</th><th>بعد الفلانشة</th><th class="no-print" style="width:1%"></th></tr></thead>
+                <tbody id="tbl-cathodic-followup"></tbody>
               </table>
             </div>
           </div>
@@ -884,12 +958,10 @@
             <div class="sec-title">العدادات وتصحيح الحجم</div>
             <div class="tbl-wrap">
               <table class="data-tbl">
-                <thead><tr><th>العداد التوربيني</th><th>القراءة السابقة</th></tr></thead>
+                <thead><tr><th>العداد</th><th>القراءة السابقة</th><th>القراءة الحالية</th></tr></thead>
                 <tbody>
-                  <tr><td class="row-label">العداد التوربيني</td><td><input></td></tr>
-                  <tr><td class="row-label">القراءة الحالية</td><td><input></td></tr>
-                  <tr><td class="row-label">Volume Corrector</td><td><input placeholder="القراءة السابقة"></td></tr>
-                  <tr><td class="row-label">القراءة الحالية</td><td><input></td></tr>
+                  <tr><td class="row-label">العداد التوربيني</td><td><input></td><td><input></td></tr>
+                  <tr><td class="row-label">Volume Corrector</td><td><input></td><td><input></td></tr>
                 </tbody>
               </table>
             </div>
@@ -1049,8 +1121,8 @@ function ddColor(sel){
 
 /* ============ محافظة -> منطقة dependent dropdown (مستخدمة في عدة صفحات) ============ */
 const areaOptions = {
-  'قليوبية': ['القلج','الجبل الأصفر'],
-  'قاهرة': ['بدر','مدينتي','هليوبوليس','سراي','نور','كابيتال جراندز','مستقبل','حدائق العاصمة'],
+  'القليوبية': ['القلج','الجبل الأصفر'],
+  'القاهرة': ['بدر','مدينتي','هليوبوليس','سراي','نور','كابيتال جراندز','مستقبل','حدائق العاصمة'],
 };
 function updateAreaOptionsGeneric(govId, areaId){
   const gov = document.getElementById(govId).value;
@@ -1081,8 +1153,7 @@ function updateValveDiameter(){
 }
 
 /* ============ REGULATOR MAIN TABLE ROWS (shared structure) ============ */
-const mainRegRows = ['الوحدات','Inlet Valve','Outlet Valve','رجل دخول (Cathodic Protection)','رجل الخروج (Cathodic Protection)','جسم المنظم (Cathodic Protection)','Filter','Stream 1 - Active','Stream 1 - Monitor','Stream 1 - Relief Valve','Stream 1 - Slumshut','Stream 2 - Active','Stream 2 - Monitor','Stream 2 - Relief Valve','Stream 2 - Slumshut'];
-const subRegRows = ['الوحدات','منظم فرعي 1','منظم فرعي 2'];
+const mainRegRows = ['Inlet Valve','Outlet Valve','رجل دخول','رجل الخروج','جسم المنظم','Filter','Stream 1 - Active','Stream 1 - Monitor','Stream 1 - Relief Valve','Stream 1 - Slumshut','Stream 2 - Active','Stream 2 - Monitor','Stream 2 - Relief Valve','Stream 2 - Slumshut'];
 
 function fillTable(tbodyId, rows, cols){
   const tbody = document.getElementById(tbodyId);
@@ -1095,7 +1166,49 @@ function fillTable(tbodyId, rows, cols){
 }
 
 fillTable('tbl-main-reg-followup', mainRegRows, 3);
-fillTable('tbl-sub-reg-followup', subRegRows, 3);
+
+/* ============ DYNAMIC ROWS: المنظمات الفرعية ============ */
+function addSubRegRow(tbodyId){
+  const tbody = document.getElementById(tbodyId);
+  const tr = document.createElement('tr');
+  tr.dataset.prefix = 'منظم فرعي';
+  tr.innerHTML = `<td class="row-label"></td><td><input></td><td><input></td><td><input></td><td class="no-print"><button type="button" class="btn-del-row" onclick="removeRow(this,'${tbodyId}')">حذف</button></td>`;
+  tbody.appendChild(tr);
+  renumberRows(tbodyId);
+}
+// صفين افتراضيين عند بداية الصفحة
+addSubRegRow('tbl-sub-reg-followup');
+addSubRegRow('tbl-sub-reg-followup');
+
+/* ============ DYNAMIC ROWS: الحماية الكاثودية (صواعد) ============ */
+function addCathodicRow(tbodyId){
+  const tbody = document.getElementById(tbodyId);
+  const tr = document.createElement('tr');
+  tr.dataset.prefix = 'الصاعد';
+  tr.innerHTML = `<td class="row-label"></td><td><input></td><td><input></td><td class="no-print"><button type="button" class="btn-del-row" onclick="removeRow(this,'${tbodyId}')">حذف</button></td>`;
+  tbody.appendChild(tr);
+  renumberRows(tbodyId);
+}
+// صاعدين افتراضيين عند بداية الصفحة
+addCathodicRow('tbl-cathodic-followup');
+addCathodicRow('tbl-cathodic-followup');
+
+/* ============ حذف صف + إعادة ترقيم تلقائي ============ */
+function removeRow(btn, tbodyId){
+  btn.closest('tr').remove();
+  renumberRows(tbodyId);
+}
+function renumberRows(tbodyId){
+  const tbody = document.getElementById(tbodyId);
+  if(!tbody) return;
+  let n = 1;
+  tbody.querySelectorAll('tr').forEach(tr=>{
+    if(tr.dataset.prefix){
+      tr.querySelector('.row-label').textContent = `${tr.dataset.prefix} ${n}`;
+      n++;
+    }
+  });
+}
 
 /* ============ REPORTS ============ */
 function fmtDate(d){

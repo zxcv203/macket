@@ -518,7 +518,7 @@
   <!-- ============ MOBILE TOPBAR ============ -->
   <div class="mobile-topbar">
     <div class="brand-mini">
-      <div class="dot" id="logoMiniSlot"><img src="logo.jpg" alt="شعار الشركة"></div>
+      <div class="dot" id="logoMiniSlot">غ</div>
       <span>الحديثة للغاز الطبيعي</span>
     </div>
     <button class="menu-btn" onclick="openSidebar()" aria-label="فتح القائمة">☰</button>
@@ -533,10 +533,10 @@
       <!--
         مكان اللوجو: استبدل الحرف "غ" بصورة اللوجو الحقيقية بإحدى الطريقتين:
         1) <div class="brand-mark" id="logoSlot"><img src="اسم-الصورة.png" alt="شعار الشركة"></div>
-        2) أو ضع الصورة في الخلفية عبر CSS: #logoSlot { background-image: url('logo.jpg'); }
+        2) أو ضع الصورة في الخلفية عبر CSS: #logoSlot { background-image: url('logo.png'); }
         نفس الأمر لعنصر id="logoMiniSlot" في الشريط العلوي الخاص بالموبايل فوق.
       -->
-      <div class="brand-mark" id="logoSlot"><img src="logo.jp" alt="شعار الشركة"></div
+      <div class="brand-mark" id="logoSlot">غ</div>
       <div class="brand-name">الحديثة للغاز الطبيعي</div>
       <div class="brand-sub">إدارة شبكات الغاز الطبيعي</div>
     </div>
@@ -883,7 +883,7 @@
       <div class="breadcrumb">صيانات منظمات</div>
       <div class="page-head">
         <h1>متابعة صيانة منظم</h1>
-        <button class="btn btn-ghost no-print" onclick="window.print()">🖨 طباعة كارت متابعه صيانه منظم</button>
+        <button class="btn btn-ghost no-print" onclick="window.print()">🖨 طباعة النموذج</button>
       </div>
       <div class="panel">
         <div class="form-grid">
@@ -900,7 +900,7 @@
             <label>محافظة</label>
             <select class="dd" id="regf-gov" onchange="updateAreaOptionsGeneric('regf-gov','regf-area')">
               <option value="">اختر...</option>
-              <option value="القاهرة">قاهرة</option>
+              <option value="قاهرة">قاهرة</option>
               <option value="قليوبية">قليوبية</option>
             </select>
           </div>
@@ -1121,8 +1121,8 @@ function ddColor(sel){
 
 /* ============ محافظة -> منطقة dependent dropdown (مستخدمة في عدة صفحات) ============ */
 const areaOptions = {
-  'القليوبية': ['القلج','الجبل الأصفر'],
-  'القاهرة': ['بدر','مدينتي','هليوبوليس','سراي','نور','كابيتال جراندز','مستقبل','حدائق العاصمة'],
+  'قليوبية': ['القلج','الجبل الأصفر'],
+  'قاهرة': ['بدر','مدينتي','هليوبوليس','سراي','نور','كابيتال جراندز','مستقبل','حدائق العاصمة'],
 };
 function updateAreaOptionsGeneric(govId, areaId){
   const gov = document.getElementById(govId).value;

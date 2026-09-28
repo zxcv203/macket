@@ -58,8 +58,8 @@
     font-weight: 700; font-size: 14.5px;
   }
   .mobile-topbar .brand-mini .dot {
-    width: 30px; height: 30px;
-    background: var(--amber);
+    width: 40px; height: 40px;
+    
     color: var(--navy);
     border-radius: 7px;
     display: flex; align-items: center; justify-content: center;
@@ -102,8 +102,8 @@
     margin-bottom: 14px;
   }
   .brand-mark {
-    width: 38px; height: 38px;
-    background: var(--amber);
+    width: 50px; height: 50px;
+    
     border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
     color: var(--navy);
@@ -176,9 +176,21 @@
     margin-bottom: 22px;
     padding-bottom: 16px;
     border-bottom: 1px solid var(--line);
+    flex-wrap: wrap;
+    gap: 12px;
   }
-  .page-head h1 { font-size: 21px; }
+  .page-head h1 { font-size: 21px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .breadcrumb { font-size: 12.5px; color: var(--ink-soft); margin-bottom: 6px; }
+  .head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  select.dd.title-select {
+    width: auto;
+    min-width: 130px;
+    padding: 6px 30px 6px 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+    border-color: var(--navy);
+  }
 
   .panel {
     background: var(--panel);
@@ -348,14 +360,30 @@
     border-left: 1px solid var(--line);
   }
   table.data-tbl td:last-child { border-left: none; }
-  table.data-tbl tr:nth-child(even) td { background: var(--row-alt); }
+  table.data-tbl tbody tr.row-alt td { background: var(--row-alt); }
   table.data-tbl td.row-label {
     font-weight: 600;
     color: var(--navy-soft);
     white-space: nowrap;
     background: #EFF3F2;
   }
-  table.data-tbl tr:nth-child(even) td.row-label { background: #E7ECEA; }
+  table.data-tbl tbody tr.row-alt td.row-label { background: #E7ECEA; }
+
+  /* صفوف عناوين المجموعات الفرعية (Stream 1 / Stream 2 / الحماية الكاثودية) */
+  table.data-tbl tr.subgroup-head td {
+    background: var(--navy-soft) !important;
+    color: #fff !important;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+  table.data-tbl tr.subgroup-stream1 td:not(.subgroup-head td) { background: #FBEBD3; }
+  table.data-tbl tr.subgroup-stream1.row-alt td { background: #F6E0B8; }
+  table.data-tbl tr.subgroup-stream2 td { background: #DCEEE6; }
+  table.data-tbl tr.subgroup-stream2.row-alt td { background: #CBE4D9; }
+  table.data-tbl tr.subgroup-cathodic td { background: #E4E9F5; }
+  table.data-tbl tr.subgroup-cathodic.row-alt td { background: #D6DEF0; }
+
   table.data-tbl input {
     width: 100%;
     min-width: 90px;
@@ -365,6 +393,17 @@
     border-radius: 6px;
     font-size: 13px;
     color: var(--ink);
+  }
+  table.data-tbl select.dd {
+    padding: 6px 26px 6px 8px;
+    font-size: 12.5px;
+    min-width: 110px;
+  }
+  table.data-tbl input:disabled, table.data-tbl select:disabled,
+  .form-grid input:disabled, .form-grid select:disabled {
+    background: #F0F2F1;
+    color: var(--ink-soft);
+    cursor: not-allowed;
   }
   table.data-tbl input:hover { border-color: #B9C4C2; }
   table.data-tbl input:focus { border-color: var(--amber); outline: none; box-shadow: 0 0 0 2px var(--amber-soft); }
@@ -518,7 +557,9 @@
   <!-- ============ MOBILE TOPBAR ============ -->
   <div class="mobile-topbar">
     <div class="brand-mini">
-      <div class="dot" id="logoMiniSlot">غ</div>
+      <div class="dot" id="logoMiniSlot">
+        <img src="logo.svg" alt="الحديثة للغاز الطبيعي">
+      </div>
       <span>الحديثة للغاز الطبيعي</span>
     </div>
     <button class="menu-btn" onclick="openSidebar()" aria-label="فتح القائمة">☰</button>
@@ -536,7 +577,7 @@
         2) أو ضع الصورة في الخلفية عبر CSS: #logoSlot { background-image: url('logo.png'); }
         نفس الأمر لعنصر id="logoMiniSlot" في الشريط العلوي الخاص بالموبايل فوق.
       -->
-      <div class="brand-mark" id="logoSlot">غ</div>
+      <div class="brand-mark" id="logoSlot"><img src="logo.svg" alt="الحديثة للغاز الطبيعي"></div>
       <div class="brand-name">الحديثة للغاز الطبيعي</div>
       <div class="brand-sub">إدارة شبكات الغاز الطبيعي</div>
     </div>
@@ -596,16 +637,16 @@
         <p style="color:var(--ink-soft); margin:0 0 16px 0;">اختر من القائمة الجانبية القسم المطلوب لتسجيل بيانات صيانة جديدة أو عرض التقارير.</p>
         <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px;">
           <div style="border:1px solid var(--line); border-radius:8px; padding:16px;">
-            <div style="font-weight:700; color:var(--navy); margin-bottom:4px;">صيانة منشأ</div>
-            <div style="font-size:12.5px; color:var(--ink-soft);">سكني، تجاري، صناعي</div>
+            <div style="font-weight:700; color:var(--navy); margin-bottom:4px;">صيانة وقائية</div>
+            <div style="font-size:12.5px; color:var(--ink-soft);">تسجيل حالة, تقرير</div>
           </div>
           <div style="border:1px solid var(--line); border-radius:8px; padding:16px;">
             <div style="font-weight:700; color:var(--navy); margin-bottom:4px;">محابس</div>
-            <div style="font-size:12.5px; color:var(--ink-soft);">صيانة، كارت تعريف، مكونات شبكة</div>
+            <div style="font-size:12.5px; color:var(--ink-soft);">صيانة، مكونات شبكة</div>
           </div>
           <div style="border:1px solid var(--line); border-radius:8px; padding:16px;">
             <div style="font-weight:700; color:var(--navy); margin-bottom:4px;">صيانات منظمات</div>
-            <div style="font-size:12.5px; color:var(--ink-soft);">كروت تعريف، متابعة، تقارير</div>
+            <div style="font-size:12.5px; color:var(--ink-soft);"> متابعة، تقارير</div>
           </div>
         </div>
       </div>
@@ -740,7 +781,10 @@
     <!-- ============ VALVES: صيانة المحابس ============ -->
     <div data-pageview="valves-maintenance" style="display:none;">
       <div class="breadcrumb">محابس</div>
-      <div class="page-head"><h1>صيانة المحابس</h1></div>
+      <div class="page-head">
+        <h1>صيانة المحابس</h1>
+        <button class="btn btn-ghost no-print" onclick="showCoords('vmnt')">📍 الإحداثيات</button>
+      </div>
       <div class="panel">
         <div class="form-grid">
           <div class="f-item"><label>رقم المحبس</label><input type="text" placeholder="رقم المحبس"></div>
@@ -833,8 +877,14 @@
           </div>
           <div class="f-item">
             <label>منطقة</label>
-            <select class="dd" id="vmnt-area">
+            <select class="dd" id="vmnt-area" onchange="updateSectorOptions('vmnt')">
               <option value="">اختر المحافظة أولاً</option>
+            </select>
+          </div>
+          <div class="f-item">
+            <label>قطاع</label>
+            <select class="dd" id="vmnt-sector">
+              <option value="">اختر المنطقة أولاً</option>
             </select>
           </div>
 
@@ -882,23 +932,24 @@
     <div data-pageview="reg-followup" style="display:none;">
       <div class="breadcrumb">صيانات منظمات</div>
       <div class="page-head">
-        <h1>متابعة صيانة منظم</h1>
-        <button class="btn btn-ghost no-print" onclick="window.print()">🖨 طباعة النموذج</button>
+        <h1>متابعة صيانة منظم
+          <select class="dd title-select" id="regf-type">
+            <option value="">اختر النوع...</option>
+            <option value="سكني">سكني</option>
+            <option value="تجاري">تجاري</option>
+            <option value="صناعي">صناعي</option>
+          </select>
+        </h1>
+        <div class="head-actions no-print">
+          <button class="btn btn-ghost" onclick="showCoords('regf')">📍 الإحداثيات</button>
+          <button class="btn btn-ghost" onclick="window.print()">🖨 طباعة النموذج</button>
+        </div>
       </div>
       <div class="panel">
         <div class="form-grid">
           <div class="f-item">
-            <label>نوع المنظم</label>
-            <select class="dd">
-              <option value="">اختر...</option>
-              <option value="سكني">سكني</option>
-              <option value="تجاري">تجاري</option>
-              <option value="صناعي">صناعي</option>
-            </select>
-          </div>
-          <div class="f-item">
             <label>محافظة</label>
-            <select class="dd" id="regf-gov" onchange="updateAreaOptionsGeneric('regf-gov','regf-area')">
+            <select class="dd" id="regf-gov" onchange="updateAreaOptionsGeneric('regf-gov','regf-area'); clearSector('regf')">
               <option value="">اختر...</option>
               <option value="قاهرة">قاهرة</option>
               <option value="قليوبية">قليوبية</option>
@@ -906,26 +957,93 @@
           </div>
           <div class="f-item">
             <label>منطقة</label>
-            <select class="dd" id="regf-area">
+            <select class="dd" id="regf-area" onchange="updateSectorOptions('regf')">
               <option value="">اختر المحافظة أولاً</option>
             </select>
           </div>
-          <div class="f-item"><label>قطاع</label><input type="text"></div>
-          <div class="f-item"><label>رقم مسلسل</label><input type="text"></div>
-          <div class="f-item"><label>قطر رجل الدخول</label><input type="text"></div>
-          <div class="f-item"><label>قطر رجل الخروج</label><input type="text"></div>
-          <div class="f-item"><label>قطر محبس الدخول الأرضي</label><input type="text"></div>
-          <div class="f-item"><label>نوع محبس الدخول</label><input type="text"></div>
-          <div class="f-item"><label>قطر محبس الخروج الأرضي</label><input type="text"></div>
-          <div class="f-item"><label>نوع محبس الخروج</label><input type="text"></div>
-          <div class="f-item"><label>تاريخ تشغيل المنظم</label><input type="date"></div>
-          <div class="f-item"><label>سعة المنظم الرئيسي</label><input type="text"></div>
+          <div class="f-item">
+            <label>قطاع</label>
+            <select class="dd" id="regf-sector" onchange="applySectorData('regf')">
+              <option value="">اختر المنطقة أولاً</option>
+            </select>
+          </div>
+          <div class="f-item">
+            <label>قطر رجل الدخول</label>
+            <select class="dd" id="regf-in-dia">
+              <option value="">اختر...</option>
+              <option>2</option><option>4</option><option>6</option><option>8</option><option>10</option><option>12</option>
+            </select>
+          </div>
+          <div class="f-item">
+            <label>قطر رجل الخروج</label>
+            <select class="dd" id="regf-out-dia">
+              <option value="">اختر...</option>
+              <option>2</option><option>4</option><option>6</option><option>8</option><option>10</option><option>12</option>
+            </select>
+          </div>
+          <div class="f-item">
+            <label>قطر محبس الدخول الأرضي</label>
+            <select class="dd" id="regf-in-valve-dia">
+              <option value="">اختر...</option>
+              <option>2</option><option>4</option><option>6</option><option>8</option><option>10</option><option>12</option><option>63</option><option>90</option><option>125</option><option>180</option><option>250</option>
+            </select>
+          </div>
+          <div class="f-item">
+            <label>نوع محبس الدخول</label>
+            <select class="dd" id="regf-in-valve-type">
+              <option value="">اختر...</option>
+              <option>بولي تك</option><option>صلب</option>
+            </select>
+          </div>
+          <div class="f-item">
+            <label>قطر محبس الخروج الأرضي</label>
+            <select class="dd" id="regf-out-valve-dia">
+              <option value="">اختر...</option>
+              <option>2</option><option>4</option><option>6</option><option>8</option><option>10</option><option>12</option><option>63</option><option>90</option><option>125</option><option>180</option><option>250</option>
+            </select>
+          </div>
+          <div class="f-item">
+            <label>نوع محبس الخروج</label>
+            <select class="dd" id="regf-out-valve-type">
+              <option value="">اختر...</option>
+              <option>بولي تك</option><option>صلب</option>
+            </select>
+          </div>
+          <div class="f-item"><label>تاريخ تشغيل المنظم</label><input type="date" id="regf-op-date"></div>
+          <div class="f-item">
+            <label>سعة المنظم الرئيسي</label>
+            <select class="dd" id="regf-capacity">
+              <option value="">اختر...</option>
+              <option>1000</option>
+            </select>
+          </div>
         </div>
 
         <div class="sec-title">المنظم الرئيسي</div>
         <div class="tbl-wrap">
-          <table class="data-tbl">
-            <thead><tr><th style="width:26%">المنظم الرئيسي</th><th>ضغط الدخول (الحالة قبل)</th><th>ضغط الخروج (الحالة بعد)</th><th>ملحوظة</th></tr></thead>
+          <table class="data-tbl grouped-tbl">
+            <thead>
+              <tr>
+                <th rowspan="2" style="width:24%">المنظم الرئيسي</th>
+                <th colspan="1">ضغط الدخول</th>
+                        <td>
+          <input
+            
+            type="text"
+            name="main_in_pressure"
+            
+          >
+        </td>
+                <th colspan="1">ضغط الخروج</th>
+                <td> <input type="text" name="main_out_pressure"> </td>
+                <th rowspan="2">ملحوظة</th>
+              </tr>
+              <tr>
+                <th>الحالة قبل</th>
+                <th>الحالة بعد</th>
+              </tr>
+            </thead>
+            
             <tbody id="tbl-main-reg-followup"></tbody>
           </table>
         </div>
@@ -938,7 +1056,28 @@
             </div>
             <div class="tbl-wrap">
               <table class="data-tbl">
-                <thead><tr><th>المنظمات الفرعية</th><th>ضغط الدخول (قبل)</th><th>ضغط الخروج (بعد)</th><th>ملحوظة</th><th class="no-print" style="width:1%"></th></tr></thead>
+                <thead>
+                  <tr>
+                    <th rowspan="2">المنظمات الفرعية</th>
+                <th colspan="1">ضغط الدخول</th>
+                        <td>
+          <input
+            
+            type="text"
+            name="main_in_pressure"
+            
+          >
+        </td>
+                <th colspan="1">ضغط الخروج</th>
+                <td> <input type="text" name="main_out_pressure"> </td>
+                    <th rowspan="1">ملحوظة</th>
+                    <th rowspan="2" class="no-print" style="width:1%"></th>
+                  </tr>
+                  <tr>
+                    <th>الحالة قبل</th>
+                    <th>الحالة بعد</th>
+                  </tr>
+                </thead>
                 <tbody id="tbl-sub-reg-followup"></tbody>
               </table>
             </div>
@@ -960,8 +1099,8 @@
               <table class="data-tbl">
                 <thead><tr><th>العداد</th><th>القراءة السابقة</th><th>القراءة الحالية</th></tr></thead>
                 <tbody>
-                  <tr><td class="row-label">العداد التوربيني</td><td><input></td><td><input></td></tr>
-                  <tr><td class="row-label">Volume Corrector</td><td><input></td><td><input></td></tr>
+                  <tr><td class="row-label">العداد التوربيني</td><td><input id="regf-turbine-prev"></td><td><input></td></tr>
+                  <tr><td class="row-label">Volume Corrector</td><td><input id="regf-vc-prev"></td><td><input></td></tr>
                 </tbody>
               </table>
             </div>
@@ -1136,6 +1275,97 @@ function updateAreaOptionsGeneric(govId, areaId){
 }
 function updateAreaOptions(){ updateAreaOptionsGeneric('fe-gov','fe-area'); }
 
+/* ============ منطقة -> قطاعات (بيانات وهمية) ============ */
+const sectorOptions = {
+  'القلج': ['قطاع 1','قطاع 2','قطاع 3'],
+  'الجبل الأصفر': ['قطاع 1','قطاع 2'],
+  'بدر': ['قطاع 1','قطاع 2','قطاع 3','قطاع 4'],
+  'مدينتي': ['قطاع 1','قطاع 2'],
+  'هليوبوليس': ['قطاع 1','قطاع 2','قطاع 3'],
+  'سراي': ['قطاع 1','قطاع 2'],
+  'نور': ['قطاع 1','قطاع 2'],
+  'كابيتال جراندز': ['قطاع 1','قطاع 2'],
+  'مستقبل': ['قطاع 1','قطاع 2','قطاع 3'],
+  'حدائق العاصمة': ['قطاع 1','قطاع 2'],
+};
+/* بيانات محفوظة وهمية لبعض القطاعات - تحاكي سجل زيارة سابقة لكل قطاع */
+const sectorSavedData = {
+  'بدر__قطاع 1': {
+    'regf-in-dia':'4','regf-out-dia':'6','regf-in-valve-dia':'90','regf-in-valve-type':'صلب',
+    'regf-out-valve-dia':'125','regf-out-valve-type':'صلب','regf-op-date':'2024-03-10','regf-capacity':'1000',
+    'regf-turbine-prev':'15420','regf-vc-prev':'15210',
+    coords: '30.1234° N, 31.5678° E'
+  },
+  'القلج__قطاع 1': {
+    'regf-in-dia':'2','regf-out-dia':'4','regf-in-valve-dia':'63','regf-in-valve-type':'بولي تك',
+    'regf-out-valve-dia':'90','regf-out-valve-type':'بولي تك','regf-op-date':'2023-11-02','regf-capacity':'1000',
+    'regf-turbine-prev':'8760','regf-vc-prev':'8705',
+    coords: '30.2011° N, 31.3244° E'
+  },
+};
+
+function updateSectorOptions(prefix){
+  const area = document.getElementById(prefix+'-area').value;
+  const sectorSel = document.getElementById(prefix+'-sector');
+  if(!sectorSel) return;
+  if(!area){
+    sectorSel.innerHTML = '<option value="">اختر المنطقة أولاً</option>';
+    return;
+  }
+  const opts = sectorOptions[area] || ['قطاع 1'];
+  sectorSel.innerHTML = '<option value="">اختر...</option>' + opts.map(o=>`<option value="${o}">${o}</option>`).join('');
+}
+
+function clearSector(prefix){
+  const sectorSel = document.getElementById(prefix+'-sector');
+  if(sectorSel) sectorSel.innerHTML = '<option value="">اختر المنطقة أولاً</option>';
+  unlockSectorFields(prefix);
+}
+
+/* الحقول اللي بتتقفل/تتملا تلقائيًا لما يتحدد قطاع محفوظ قبل كده */
+const sectorLockedFields = ['regf-in-dia','regf-out-dia','regf-in-valve-dia','regf-in-valve-type','regf-out-valve-dia','regf-out-valve-type','regf-op-date','regf-capacity','regf-turbine-prev','regf-vc-prev'];
+
+function applySectorData(prefix){
+  const area = document.getElementById(prefix+'-area').value;
+  const sector = document.getElementById(prefix+'-sector').value;
+  if(!sector){ unlockSectorFields(prefix); return; }
+
+  const key = area + '__' + sector;
+  const saved = sectorSavedData[key];
+
+  sectorLockedFields.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(saved && saved[id] !== undefined){
+      el.value = saved[id];
+      el.disabled = true;
+    } else {
+      el.disabled = false;
+    }
+  });
+}
+
+function unlockSectorFields(prefix){
+  sectorLockedFields.forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.disabled = false;
+  });
+}
+
+/* ============ إحداثيات القطاع ============ */
+function showCoords(prefix){
+  const area = document.getElementById(prefix+'-area') ? document.getElementById(prefix+'-area').value : '';
+  const sector = document.getElementById(prefix+'-sector') ? document.getElementById(prefix+'-sector').value : '';
+  if(!sector){
+    alert('يرجى اختيار القطاع أولًا لعرض إحداثياته');
+    return;
+  }
+  const key = area + '__' + sector;
+  const saved = sectorSavedData[key];
+  const coords = saved ? saved.coords : '30.0500° N, 31.2333° E'; // إحداثيات افتراضية تجريبية
+  alert(`إحداثيات ${sector} - ${area}:\n${coords}`);
+}
+
 /* ============ VALVES: نوع المحبس -> قطر المحبس dependent dropdown ============ */
 const valveDiameterOptions = {
   'بولي تك': ['250','180','125','90','63'],
@@ -1152,20 +1382,58 @@ function updateValveDiameter(){
   diaSel.innerHTML = '<option value="">اختر...</option>' + opts.map(o=>`<option value="${o}">${o}</option>`).join('');
 }
 
-/* ============ REGULATOR MAIN TABLE ROWS (shared structure) ============ */
-const mainRegRows = ['Inlet Valve','Outlet Valve','رجل دخول','رجل الخروج','جسم المنظم','Filter','Stream 1 - Active','Stream 1 - Monitor','Stream 1 - Relief Valve','Stream 1 - Slumshut','Stream 2 - Active','Stream 2 - Monitor','Stream 2 - Relief Valve','Stream 2 - Slumshut'];
+/* ============ REGULATOR MAIN TABLE (grouped structure) ============ */
+function mainTblRow(label, extraClass){
+  return `<tr class="${extraClass||''}"><td class="row-label">${label}</td><td><input></td><td><input></td><td><input></td></tr>`;
+}
+function mainTblFilterRow(extraClass){
+  return `<tr class="${extraClass||''}"><td class="row-label">Filter</td>
+    <td><select class="dd"><option value="">اختر...</option><option>يحتاج تنظيف</option><option>نظيف</option></select></td>
+    <td><select class="dd"><option value="">اختر...</option><option>نظيف</option><option>تم التنظيف</option></select></td>
+    <td><input></td></tr>`;
+}
+function mainTblSubHead(text){
+  return `<tr class="subgroup-head"><td colspan="4">${text}</td></tr>`;
+}
+function fillMainRegTable(tbodyId){
+  const tbody = document.getElementById(tbodyId);
+  if(!tbody) return;
+  let html = '';
+  let alt = false;
+  const row = (label, cls) => { alt = !alt; return mainTblRow(label, cls + (alt?' row-alt':'')); };
+  const filterRow = (cls) => { alt = !alt; return mainTblFilterRow(cls + (alt?' row-alt':'')); };
+
+  html += row('Inlet Valve','');
+  html += row('Outlet Valve','');
+  html += mainTblSubHead('الحماية الكاثودية');
+  html += row('رجل الدخول','subgroup-cathodic');
+  html += row('رجل الخروج','subgroup-cathodic');
+  html += row('جسم المنظم','subgroup-cathodic');
+  html += filterRow('');
+  html += mainTblSubHead('Stream 1');
+  html += row('Active','subgroup-stream1');
+  html += row('Monitor','subgroup-stream1');
+  html += row('Relief Valve','subgroup-stream1');
+  html += row('Slumshut','subgroup-stream1');
+  html += mainTblSubHead('Stream 2');
+  html += row('Active','subgroup-stream2');
+  html += row('Monitor','subgroup-stream2');
+  html += row('Relief Valve','subgroup-stream2');
+  html += row('Slumshut','subgroup-stream2');
+
+  tbody.innerHTML = html;
+}
+fillMainRegTable('tbl-main-reg-followup');
 
 function fillTable(tbodyId, rows, cols){
   const tbody = document.getElementById(tbodyId);
   if(!tbody) return;
-  tbody.innerHTML = rows.map(r=>{
+  tbody.innerHTML = rows.map((r,i)=>{
     let cells = `<td class="row-label">${r}</td>`;
-    for(let i=0;i<cols;i++) cells += `<td><input></td>`;
-    return `<tr>${cells}</tr>`;
+    for(let j=0;j<cols;j++) cells += `<td><input></td>`;
+    return `<tr class="${i%2===1?'row-alt':''}">${cells}</tr>`;
   }).join('');
 }
-
-fillTable('tbl-main-reg-followup', mainRegRows, 3);
 
 /* ============ DYNAMIC ROWS: المنظمات الفرعية ============ */
 function addSubRegRow(tbodyId){
@@ -1205,6 +1473,7 @@ function renumberRows(tbodyId){
   tbody.querySelectorAll('tr').forEach(tr=>{
     if(tr.dataset.prefix){
       tr.querySelector('.row-label').textContent = `${tr.dataset.prefix} ${n}`;
+      tr.classList.toggle('row-alt', n % 2 === 0);
       n++;
     }
   });

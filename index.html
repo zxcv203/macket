@@ -628,6 +628,14 @@
   table.pm-tbl input[type=date] { width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: 4px; padding: 2px 1px; font-size: 9.5px; text-align: center; }
   table.pm-tbl input[type=text] { width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: 4px; padding: 2px 4px; font-size: 10.5px; }
   table.pm-tbl input:focus { outline: none; border-color: var(--amber); background: #fff; box-shadow: none; }
+
+  table.pm-tbl input.pm-chk { -webkit-appearance: none; appearance: none; width: 17px; height: 17px; margin: 0; padding: 0; vertical-align: middle; border: 1.5px solid #9AA8A6; border-radius: 4px; background: #fff; cursor: pointer; position: relative; }
+  table.pm-tbl input.pm-chk:hover { border-color: var(--navy); }
+  table.pm-tbl input.pm-chk:checked { background: var(--navy); border-color: var(--navy); }
+  table.pm-tbl input.pm-chk:checked::after { content: '\2713'; position: absolute; inset: 0; color: #fff; font-size: 13px; font-weight: 700; line-height: 14px; text-align: center; }
+  .pm-tick { font-size: 15px; font-weight: 700; line-height: 1; }
+  .pm-tick.good { color: var(--good); }
+  .pm-tick.bad { color: var(--bad); }
   .col-block { width: 3.5%; } .col-building { width: 3.5%; } .col-radio { width: 4.1%; }
   .col-classify { width: 11%; } .col-date { width: 8%; } .col-note { width: 15%; }
   .fab-save { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(0); z-index: 40; background: var(--navy); color: #fff; border: none; padding: 13px 30px; border-radius: 30px; font-size: 14.5px; font-weight: 700; box-shadow: 0 6px 20px rgba(27,58,75,0.35); display: flex; align-items: center; gap: 8px; transition: transform .25s ease, opacity .25s ease; opacity: 1; }
@@ -684,6 +692,12 @@
     <div class="nav-group">
       <button class="nav-head" data-group="facility-followup" onclick="showPage('facility-followup')">
         <span>متابعة الصيانة الوقائية</span>
+      </button>
+    </div>
+
+    <div class="nav-group">
+      <button class="nav-head" data-group="facility-followup-report" onclick="showPage('facility-followup-report')">
+        <span>تقرير متابعة الصيانة الوقائية</span>
       </button>
     </div>
 
@@ -829,7 +843,7 @@
             <label>محافظة</label>
             <select class="dd" id="fe-gov" onchange="updateAreaOptions()">
               <option value="">اختر...</option>
-              <option value="القاهرة">القاهرة</option>
+              <option value="الالقاهرة">القاهرة</option>
               <option value="القليوبية">القليوبية</option>
             </select>
           </div>
@@ -941,10 +955,10 @@
             <th rowspan="2">تاريخ المرور</th><th rowspan="2">شرح الملاحظة</th><th rowspan="2">تاريخ انتهاء الملاحظة</th>
           </tr>
           <tr>
-            <th>صح</th><th>غلط</th>
-            <th>صح</th><th>غلط</th>
+            <th>سليم</th><th>غير سليم</th>
+            <th>سليم</th><th>غير سليم</th>
             <th>يوجد</th><th>لا يوجد</th>
-            <th>صح</th><th>غلط</th>
+            <th>سليم</th><th>غير سليم</th>
             <th>يوجد</th><th>لا يوجد</th>
           </tr>
         </thead>
@@ -956,6 +970,63 @@
   <span class="fab-icon">💾</span>
   <span>حفظ كل البيانات</span>
 </button>
+    </div>
+
+    <!-- ============ تقرير متابعة الصيانة الوقائية ============ -->
+    <div data-pageview="facility-followup-report" style="display:none;">
+      <div class="page-head"><h1>تقرير متابعة الصيانة الوقائية</h1></div>
+
+      <div class="panel no-print">
+        <div class="filter-bar">
+          <div class="filter-item"><label>من تاريخ</label><input type="date" id="pmr-from"></div>
+          <div class="filter-item"><label>إلى تاريخ</label><input type="date" id="pmr-to"></div>
+          <button class="btn btn-amber" onclick="genPmReport()">عرض التقرير</button>
+        </div>
+      </div>
+
+      <div class="panel report-hidden" id="pmr-report">
+        <div class="report-title no-print" style="text-align:left; margin-bottom:10px;">
+          <button class="btn btn-ghost" onclick="window.print()">🖨 طباعة التقرير</button>
+        </div>
+        <div class="report-title">
+          <h2>تقرير متابعة الصيانة الوقائية</h2>
+          <p id="pmr-range">الفترة: —</p>
+        </div>
+        <div class="pm-wrap">
+          <table class="pm-tbl">
+            <colgroup>
+              <col class="col-block"><col class="col-building">
+              <col class="col-radio"><col class="col-radio">
+              <col class="col-radio"><col class="col-radio">
+              <col class="col-radio"><col class="col-radio">
+              <col class="col-radio"><col class="col-radio">
+              <col class="col-radio"><col class="col-radio">
+              <col class="col-classify">
+              <col class="col-date"><col class="col-note"><col class="col-date">
+            </colgroup>
+            <thead>
+              <tr>
+                <th rowspan="2">بلوك</th><th rowspan="2">عمارة</th>
+                <th colspan="2">دهان</th>
+                <th colspan="2">كلبسات</th>
+                <th colspan="2">عبث الشاكوش</th>
+                <th colspan="2">قاعدة البراكت</th>
+                <th colspan="2">مخلفات أو عبث أو تركيبات</th>
+                <th rowspan="2">تصنيف أعطال العبث</th>
+                <th rowspan="2">تاريخ المرور</th><th rowspan="2">شرح الملاحظة</th><th rowspan="2">تاريخ انتهاء الملاحظة</th>
+              </tr>
+              <tr>
+                <th>سليم</th><th>غير سليم</th>
+                <th>سليم</th><th>غير سليم</th>
+                <th>يوجد</th><th>لا يوجد</th>
+                <th>سليم</th><th>غير سليم</th>
+                <th>يوجد</th><th>لا يوجد</th>
+              </tr>
+            </thead>
+            <tbody id="pmr-tbody"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <!-- ============ VALVES: صيانة المحابس ============ -->
@@ -1396,6 +1467,7 @@ const pageMeta = {
   'facility-entry': {group:'facility', crumb:'صيانة وقائية', title:'تسجيل حالة'},
   'facility-report': {group:'facility', crumb:'صيانة وقائية', title:'تقرير'},
   'facility-followup': {group:'facility-followup', crumb:'', title:'متابعة الصيانة الوقائية'},
+  'facility-followup-report': {group:'facility-followup-report', crumb:'', title:'تقرير متابعة الصيانة الوقائية'},
   'valves-maintenance': {group:'valves', crumb:'محابس', title:'صيانة المحابس'},
   'valves-monthly': {group:'valves', crumb:'محابس', title:'تقرير شهري لصيانة المحابس'},
   'reg-followup': {group:'regulators', crumb:'صيانات منظمات', title:'متابعة صيانة منظم'},
@@ -1869,7 +1941,7 @@ function pmLoadSectorData(){
   /* تصنيف أعطال العبث - قائمة ثابتة */
   const tamperingOptions = ['عمل سيراميك على التركيبات','عمل مصطبة على الشاكوش','تعديل مسار مخالف','أخرى'];
 
-  const radioCell = (name) => `<td><input type="radio" name="${name}"></td>`;
+  const radioCell = (name) => `<td><input type="checkbox" class="pm-chk" data-grp="${name}" onchange="pmExclusive(this)"></td>`;
   const tamperingSelect = (rowId) => `
     <select class="classify-dd" id="classify-${rowId}" disabled>
       <option value="">—</option>
@@ -1886,8 +1958,8 @@ function pmLoadSectorData(){
       ${radioCell(rowId+'-clamps')}${radioCell(rowId+'-clamps')}
       ${radioCell(rowId+'-hammer')}${radioCell(rowId+'-hammer')}
       ${radioCell(rowId+'-bracket')}${radioCell(rowId+'-bracket')}
-      <td><input type="radio" name="${rowId}-tampering" onchange="pmToggleClassify('${rowId}', true)"></td>
-      <td><input type="radio" name="${rowId}-tampering" onchange="pmToggleClassify('${rowId}', false)"></td>
+      <td><input type="checkbox" class="pm-chk" data-grp="${rowId}-tampering" data-v="yes" onchange="pmExclusive(this); pmSyncClassify('${rowId}')"></td>
+      <td><input type="checkbox" class="pm-chk" data-grp="${rowId}-tampering" data-v="no" onchange="pmExclusive(this); pmSyncClassify('${rowId}')"></td>
       <td>${tamperingSelect(rowId)}</td>
       <td><input type="date"></td>
       <td><input type="text" placeholder="شرح الملاحظة"></td>
@@ -1905,6 +1977,19 @@ function pmToggleClassify(rowId, show){
   if(!sel) return;
   sel.disabled = !show;
   if(!show) sel.value = '';
+}
+
+/* خانتين نفس الصف والمجموعة: اختيار واحدة بيلغي التانية (ويمكن إلغاء الاختيار) */
+function pmExclusive(el){
+  if(!el.checked) return;
+  el.closest('tr').querySelectorAll('input.pm-chk').forEach(o=>{
+    if(o !== el && o.dataset.grp === el.dataset.grp) o.checked = false;
+  });
+}
+/* قائمة تصنيف أعطال العبث تتفعل فقط لما يتحدد "يوجد" */
+function pmSyncClassify(rowId){
+  const yes = document.querySelector('input.pm-chk[data-grp="'+rowId+'-tampering"][data-v="yes"]');
+  pmToggleClassify(rowId, !!(yes && yes.checked));
 }
 
 function pmSaveAll(){
@@ -1947,6 +2032,49 @@ window.addEventListener('scroll', () => {
 });
 
 updateFabVisibility();
+
+/* ============ تقرير متابعة الصيانة الوقائية (بيانات توضيحية) ============ */
+function genPmReport(){
+  const from = document.getElementById('pmr-from').value;
+  const to = document.getElementById('pmr-to').value;
+  if(!from || !to){ alert('يرجى تحديد الفترة من وإلى أولًا'); return; }
+  if(from > to){ alert('تاريخ البداية لازم يكون قبل تاريخ النهاية'); return; }
+  document.getElementById('pmr-range').textContent = `الفترة من ${fmtDate(from)} إلى ${fmtDate(to)}`;
+
+  const DAY = 86400000;
+  const t0 = Date.parse(from), t1 = Date.parse(to);
+  const span = Math.round((t1 - t0) / DAY);
+  const iso = (t) => new Date(t).toISOString().slice(0,10);
+  const addDays = (d, n) => iso(Math.min(Date.parse(d) + n*DAY, t1));
+
+  // s/b = سليم/غير سليم ، y/n = يوجد/لا يوجد
+  const sample = [
+    ['01','03','s','s','n','s','n','',                          '',                                  0],
+    ['01','05','b','s','n','s','n','',                          'دهان متقشر ويحتاج إعادة دهان',       4],
+    ['02','08','s','b','y','s','y','عمل مصطبة على الشاكوش',     'مصطبة خرسانية حول الشاكوش',          6],
+    ['02','14','s','s','n','b','n','',                          'قاعدة البراكت مائلة',                3],
+    ['03','06','b','b','n','s','y','عمل سيراميك على التركيبات','سيراميك فوق التركيبات',              7],
+    ['05','11','s','s','n','s','n','',                          '',                                  0],
+    ['06','20','s','b','y','b','y','تعديل مسار مخالف',          'تعديل في مسار الخط بدون تصريح',      5],
+    ['07','31','s','s','n','s','n','',                          '',                                  0],
+  ];
+
+  const tick = (on, tone) => on ? `<span class="pm-tick ${tone}">✓</span>` : '';
+  const pairSB = (v) => `<td>${tick(v==='s','good')}</td><td>${tick(v==='b','bad')}</td>`;
+  const pairYN = (v) => `<td>${tick(v==='y','bad')}</td><td>${tick(v==='n','good')}</td>`;
+
+  document.getElementById('pmr-tbody').innerHTML = sample.map((r, i) => {
+    const [blk, bld, paint, clamps, hammer, bracket, debris, cls, note, endOff] = r;
+    const visit = iso(t0 + Math.round(span * i / (sample.length - 1)) * DAY);
+    const end = note ? addDays(visit, endOff) : '';
+    return `<tr>
+      <td class="row-label">${blk}</td><td class="row-label">${bld}</td>
+      ${pairSB(paint)}${pairSB(clamps)}${pairYN(hammer)}${pairSB(bracket)}${pairYN(debris)}
+      <td>${cls}</td><td>${fmtDate(visit)}</td><td>${note}</td><td>${end ? fmtDate(end) : ''}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('pmr-report').classList.remove('report-hidden');
+}
 
 function showPage(id){
   document.querySelectorAll('[data-pageview]').forEach(p=>p.style.display='none');

@@ -641,6 +641,7 @@
   #pm-table-panel, #pmr-report { overflow: visible; }
   table.pm-tbl thead th { position: sticky; top: var(--pm-sticky-top, 0px); z-index: 5; }
   table.pm-tbl thead tr:nth-child(2) th { top: calc(var(--pm-sticky-top, 0px) + var(--pm-head1, 30px)); }
+  select.note-dd { font-size: 10px; padding: 2px 1px; text-overflow: ellipsis; }
   .col-loc { width: 4.8%; }
   .col-block { width: 3.5%; } .col-building { width: 3.5%; } .col-radio { width: 4.1%; }
   .col-classify { width: 11%; } .col-date { width: 8%; } .col-note { width: 15%; }
@@ -1887,6 +1888,17 @@ const pmSectorData = {
 const pmAreaOptions = { '11': ['25','33'] };
 const pmSectorOptions = { '11__25': ['23','25'], '11__33': ['26','27','29'] };
 
+/* خيارات شرح الملاحظة */
+const pmNoteOptions = [
+  'مصطبة خرسانية حول الشاكوش',
+  'قاعدة البراكت مائلة',
+  'سيراميك فوق التركيبات',
+  'تعديل في مسار الخط بدون تصريح',
+  'دهان متقشر ويحتاج إعادة دهان',
+  'لا يوجد',
+  'أخرى'
+];
+
 function pmUpdateAreas(){
   const gov = document.getElementById('pm-gov').value;
   const areaSel = document.getElementById('pm-area');
@@ -1998,7 +2010,10 @@ function pmLoadSectorData(){
       <td><input type="checkbox" class="pm-chk" data-grp="${rowId}-tampering" data-v="no" onchange="pmExclusive(this); pmSyncClassify('${rowId}')"></td>
       <td>${tamperingSelect(rowId)}</td>
       <td><input type="date"></td>
-      <td><input type="text" placeholder="شرح الملاحظة"></td>
+      <td><select class="classify-dd note-dd" title="شرح الملاحظة" onchange="this.title = this.value || 'شرح الملاحظة'">
+        <option value="">—</option>
+        ${pmNoteOptions.map(o=>`<option value="${o}">${o}</option>`).join('')}
+      </select></td>
       <td><input type="date"></td>
     </tr>`;
   }).join('');
@@ -2115,7 +2130,7 @@ function genPmReport(){
       <td class="row-label">${loc[0]}</td><td class="row-label">${loc[1]}</td><td class="row-label">${loc[2]}</td>
       <td class="row-label">${blk}</td><td class="row-label">${bld}</td>
       ${pairSB(paint)}${pairSB(clamps)}${pairYN(hammer)}${pairSB(bracket)}${pairYN(debris)}
-      <td>${cls}</td><td>${fmtDate(visit)}</td><td>${note}</td><td>${end ? fmtDate(end) : ''}</td>
+      <td>${cls}</td><td>${fmtDate(visit)}</td><td>${note || 'لا يوجد'}</td><td>${end ? fmtDate(end) : ''}</td>
     </tr>`;
   }).join('');
   document.getElementById('pmr-report').classList.remove('report-hidden');

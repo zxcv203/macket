@@ -636,6 +636,12 @@
   .pm-tick { font-size: 15px; font-weight: 700; line-height: 1; }
   .pm-tick.good { color: var(--good); }
   .pm-tick.bad { color: var(--bad); }
+  /* رؤوس الجدول ثابتة مع السكرول (body كان overflow-x:hidden فبيكسر الـ sticky، فنستخدم clip) */
+  body { overflow-x: clip; }
+  #pm-table-panel, #pmr-report { overflow: visible; }
+  table.pm-tbl thead th { position: sticky; top: var(--pm-sticky-top, 0px); z-index: 5; }
+  table.pm-tbl thead tr:nth-child(2) th { top: calc(var(--pm-sticky-top, 0px) + var(--pm-head1, 30px)); }
+  .col-loc { width: 4.8%; }
   .col-block { width: 3.5%; } .col-building { width: 3.5%; } .col-radio { width: 4.1%; }
   .col-classify { width: 11%; } .col-date { width: 8%; } .col-note { width: 15%; }
   .fab-save { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(0); z-index: 40; background: var(--navy); color: #fff; border: none; padding: 13px 30px; border-radius: 30px; font-size: 14.5px; font-weight: 700; box-shadow: 0 6px 20px rgba(27,58,75,0.35); display: flex; align-items: center; gap: 8px; transition: transform .25s ease, opacity .25s ease; opacity: 1; }
@@ -843,8 +849,8 @@
             <label>محافظة</label>
             <select class="dd" id="fe-gov" onchange="updateAreaOptions()">
               <option value="">اختر...</option>
-              <option value="الالقاهرة">القاهرة</option>
-              <option value="القليوبية">القليوبية</option>
+              <option value="قاهرة">قاهرة</option>
+              <option value="قليوبية">قليوبية</option>
             </select>
           </div>
           <div class="f-item">
@@ -899,7 +905,7 @@
   </div>
 
   <div class="panel no-print">
-    <div class="form-grid" style="grid-template-columns: repeat(3,1fr);">
+    <div class="form-grid" style="grid-template-columns: repeat(auto-fit,minmax(150px,1fr));">
       <div class="f-item">
         <label>محافظة</label>
         <select class="dd" id="pm-gov" onchange="pmUpdateAreas()">
@@ -915,8 +921,14 @@
       </div>
       <div class="f-item">
         <label>قطاع</label>
-        <select class="dd" id="pm-sector" onchange="pmLoadSectorData()">
+        <select class="dd" id="pm-sector" onchange="pmUpdateBlocks()">
           <option value="">اختر المنطقة أولاً</option>
+        </select>
+      </div>
+      <div class="f-item">
+        <label>بلوك</label>
+        <select class="dd" id="pm-block" onchange="pmLoadSectorData()">
+          <option value="">اختر القطاع أولاً</option>
         </select>
       </div>
     </div>
@@ -995,6 +1007,7 @@
         <div class="pm-wrap">
           <table class="pm-tbl">
             <colgroup>
+              <col class="col-loc"><col class="col-loc"><col class="col-loc">
               <col class="col-block"><col class="col-building">
               <col class="col-radio"><col class="col-radio">
               <col class="col-radio"><col class="col-radio">
@@ -1006,6 +1019,7 @@
             </colgroup>
             <thead>
               <tr>
+                <th rowspan="2">محافظة</th><th rowspan="2">منطقة</th><th rowspan="2">قطاع</th>
                 <th rowspan="2">بلوك</th><th rowspan="2">عمارة</th>
                 <th colspan="2">دهان</th>
                 <th colspan="2">كلبسات</th>
@@ -1122,8 +1136,8 @@
             <label>محافظة</label>
             <select class="dd" id="vmnt-gov" onchange="updateAreaOptionsGeneric('vmnt-gov','vmnt-area')">
               <option value="">اختر...</option>
-              <option value="القاهرة">القاهرة</option>
-              <option value="القليوبية">القليوبية</option>
+              <option value="قاهرة">قاهرة</option>
+              <option value="قليوبية">قليوبية</option>
             </select>
           </div>
           <div class="f-item">
@@ -1203,8 +1217,8 @@
             <label>محافظة</label>
             <select class="dd" id="regf-gov" onchange="updateAreaOptionsGeneric('regf-gov','regf-area'); clearSector('regf')">
               <option value="">اختر...</option>
-              <option value="القاهرة">القاهرة</option>
-              <option value="القليوبية">القليوبية</option>
+              <option value="قاهرة">قاهرة</option>
+              <option value="قليوبية">قليوبية</option>
             </select>
           </div>
           <div class="f-item">
@@ -1504,8 +1518,8 @@ function ddColor(sel){
 
 /* ============ محافظة -> منطقة dependent dropdown (مستخدمة في عدة صفحات) ============ */
 const areaOptions = {
-  'القليوبية': ['القلج','الجبل الأصفر'],
-  'القاهرة': ['بدر','مدينتي','هليوبوليس','سراي','نور','كابيتال جراندز','مستقبل','حدائق العاصمة'],
+  'قليوبية': ['القلج','الجبل الأصفر'],
+  'قاهرة': ['بدر','مدينتي','هليوبوليس','سراي','نور','كابيتال جراندز','مستقبل','حدائق العاصمة'],
 };
 function updateAreaOptionsGeneric(govId, areaId){
   const gov = document.getElementById(govId).value;
@@ -1817,8 +1831,8 @@ function genFacilityReport(){
 
   // بيانات توضيحية - في النظام الحقيقي هيتم جلبها من السجلات المحفوظة بالفترة المحددة
   const sample = [
-    [from,'تم إصلاح التسريب','سكني','أحمد محمود',from,'يوجد','لا يوجد','سليم','لا يوجد','يوجد','سليم','12','3','القطاع الأول','القاهرة','بدر'],
-    [to,'—','تجاري','محمد علي',to,'لا يوجد','يوجد','غير سليم','لا يوجد','يوجد','غير سليم','7','1','القطاع الثاني','القليوبية','القلج'],
+    [from,'تم إصلاح التسريب','سكني','أحمد محمود',from,'يوجد','لا يوجد','سليم','لا يوجد','يوجد','سليم','12','3','القطاع الأول','قاهرة','بدر'],
+    [to,'—','تجاري','محمد علي',to,'لا يوجد','يوجد','غير سليم','لا يوجد','يوجد','غير سليم','7','1','القطاع الثاني','قليوبية','القلج'],
   ];
   document.getElementById('fr-tbody').innerHTML = sample.map(row=>
     `<tr>${row.map(c=>`<td>${c}</td>`).join('')}</tr>`
@@ -1878,6 +1892,7 @@ function pmUpdateAreas(){
   const areaSel = document.getElementById('pm-area');
   const sectorSel = document.getElementById('pm-sector');
   sectorSel.innerHTML = '<option value="">اختر المنطقة أولاً</option>';
+  document.getElementById('pm-block').innerHTML = '<option value="">اختر القطاع أولاً</option>';
   pmResetTable();
   if(!gov){
     areaSel.innerHTML = '<option value="">اختر المحافظة أولاً</option>';
@@ -1895,6 +1910,7 @@ function pmUpdateSectors(){
   const gov = document.getElementById('pm-gov').value;
   const area = document.getElementById('pm-area').value;
   const sectorSel = document.getElementById('pm-sector');
+  document.getElementById('pm-block').innerHTML = '<option value="">اختر القطاع أولاً</option>';
   pmResetTable();
   if(!area){
     sectorSel.innerHTML = '<option value="">اختر المنطقة أولاً</option>';
@@ -1916,14 +1932,34 @@ function pmResetTable(){
   updateFabVisibility();
 }
 
+/* بعد اختيار القطاع: نبني قائمة البلوكات (الموجودة فعلًا في بياناته) ونعرض كل البلوكات */
+function pmUpdateBlocks(){
+  const gov = document.getElementById('pm-gov').value;
+  const area = document.getElementById('pm-area').value;
+  const sector = document.getElementById('pm-sector').value;
+  const blockSel = document.getElementById('pm-block');
+  if(!sector){
+    blockSel.innerHTML = '<option value="">اختر القطاع أولاً</option>';
+    pmResetTable();
+    return;
+  }
+  const data = pmSectorData[gov + '__' + area + '__' + sector] || [];
+  const blocks = [...new Set(data.map(r => r[0]))].sort();
+  blockSel.innerHTML = '<option value="">كل البلوكات</option>' +
+    blocks.map(b => `<option value="${b}">${b}</option>`).join('');
+  pmLoadSectorData();
+}
+
 function pmLoadSectorData(){
   const gov = document.getElementById('pm-gov').value;
   const area = document.getElementById('pm-area').value;
   const sector = document.getElementById('pm-sector').value;
+  const block = document.getElementById('pm-block').value;
   if(!sector){ pmResetTable(); return; }
 
   const key = gov + '__' + area + '__' + sector;
-  const rows = pmSectorData[key];
+  const all = pmSectorData[key];
+  const rows = (all && block) ? all.filter(r => r[0] === block) : all;
 
   if(!rows || rows.length === 0){
     document.getElementById('pm-empty-msg').innerHTML = '<div class="empty-note">لا توجد بيانات عمارات مسجلة لهذا القطاع بعد</div>';
@@ -1935,7 +1971,7 @@ function pmLoadSectorData(){
 
   document.getElementById('pm-empty-msg').style.display = 'none';
   document.getElementById('pm-table-panel').classList.remove('report-hidden');
-  document.getElementById('pm-table-title').textContent = `بيانات العمارات - ${gov} / ${area} / ${sector}`;
+  document.getElementById('pm-table-title').textContent = `بيانات العمارات - ${gov} / ${area} / ${sector}` + (block ? ` / بلوك ${block}` : '');
   document.getElementById('pm-table-count').textContent = `عدد العمارات: ${rows.length}`;
 
   /* تصنيف أعطال العبث - قائمة ثابتة */
@@ -1969,6 +2005,7 @@ function pmLoadSectorData(){
 
   document.getElementById('pm-tbody').innerHTML = html;
   updateFabVisibility();
+  pmFixHeaders();
 }
 
 /* إظهار/إخفاء قائمة تصنيف أعطال العبث حسب اختيار يوجد/لا يوجد */
@@ -2047,6 +2084,11 @@ function genPmReport(){
   const iso = (t) => new Date(t).toISOString().slice(0,10);
   const addDays = (d, n) => iso(Math.min(Date.parse(d) + n*DAY, t1));
 
+  // الموقع (محافظة/منطقة/قطاع) لكل صف - من القطاعات المسجلة، والبلوك/العمارة من بياناتها الفعلية
+  const locs = [['11','25','23'],['11','25','23'],['11','25','25'],['11','25','25'],
+                ['11','33','26'],['11','33','27'],['11','33','29'],['11','33','29']];
+  const pick = (loc, n) => (pmSectorData[loc.join('__')] || [])[n] || ['—','—'];
+
   // s/b = سليم/غير سليم ، y/n = يوجد/لا يوجد
   const sample = [
     ['01','03','s','s','n','s','n','',                          '',                                  0],
@@ -2064,17 +2106,33 @@ function genPmReport(){
   const pairYN = (v) => `<td>${tick(v==='y','bad')}</td><td>${tick(v==='n','good')}</td>`;
 
   document.getElementById('pmr-tbody').innerHTML = sample.map((r, i) => {
-    const [blk, bld, paint, clamps, hammer, bracket, debris, cls, note, endOff] = r;
+    const [, , paint, clamps, hammer, bracket, debris, cls, note, endOff] = r;
+    const loc = locs[i];
+    const [blk, bld] = pick(loc, 5 + i * 7);
     const visit = iso(t0 + Math.round(span * i / (sample.length - 1)) * DAY);
     const end = note ? addDays(visit, endOff) : '';
     return `<tr>
+      <td class="row-label">${loc[0]}</td><td class="row-label">${loc[1]}</td><td class="row-label">${loc[2]}</td>
       <td class="row-label">${blk}</td><td class="row-label">${bld}</td>
       ${pairSB(paint)}${pairSB(clamps)}${pairYN(hammer)}${pairSB(bracket)}${pairYN(debris)}
       <td>${cls}</td><td>${fmtDate(visit)}</td><td>${note}</td><td>${end ? fmtDate(end) : ''}</td>
     </tr>`;
   }).join('');
   document.getElementById('pmr-report').classList.remove('report-hidden');
+  pmFixHeaders();
 }
+
+/* ضبط إزاحة رؤوس الجدول الثابتة: ارتفاع الصف الأول + شريط الموبايل العلوي (لو ظاهر) */
+function pmFixHeaders(){
+  const bar = document.querySelector('.mobile-topbar');
+  const barH = (bar && getComputedStyle(bar).display !== 'none') ? bar.offsetHeight : 0;
+  document.documentElement.style.setProperty('--pm-sticky-top', barH + 'px');
+  document.querySelectorAll('table.pm-tbl').forEach(t => {
+    const r1 = t.querySelector('thead tr:first-child');
+    if(r1 && r1.offsetHeight) t.style.setProperty('--pm-head1', r1.offsetHeight + 'px');
+  });
+}
+window.addEventListener('resize', pmFixHeaders);
 
 function showPage(id){
   document.querySelectorAll('[data-pageview]').forEach(p=>p.style.display='none');
